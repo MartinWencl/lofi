@@ -24,12 +24,22 @@ all: $(TARGET)
 $(BINDIR):
 	mkdir -p $(BINDIR)
 
+# Create LuaJIT directories if they don't exist
+$(LUADIR):
+	mkdir -p $(LUADIR)
+
+$(LUADIR)/include:
+	mkdir -p $(LUADIR)/include
+
+$(LUADIR)/lib:
+	mkdir -p $(LUADIR)/lib
+
 # Compile and link the program with LuaJIT library
-$(TARGET): $(SRC) $(LUADIR)/lib/libluajit.a | $(BINDIR)
+$(TARGET): $(SRC) $(LUADIR)/lib/libluajit.a | $(BINDIR) $(LUADIR)/lib
 	$(CC) $(CFLAGS) $(SRC) -o $(TARGET) $(LUA_LIBS) $(LDFLAGS)
 
 # Rebuild: Clean project, clone, build, and install LuaJIT, then build the program
-rebuild: clean luajit $(TARGET)
+rebuild: clean luajit-build $(TARGET)
 
 # Clone LuaJIT repository
 luajit-repo:
@@ -40,16 +50,15 @@ luajit-repo:
 	git clone $(LUAJIT_URL) $(LUAJIT_REPO)
 
 # Build LuaJIT and copy headers and libraries
-luajit: luajit-repo
+luajit-build: luajit-repo $(LUADIR)/include $(LUADIR)/lib
 	# Build LuaJIT
 	cd $(LUAJIT_REPO) && $(MAKE)
-	# Create directories for headers and libraries if they don't exist
-	mkdir -p $(LUADIR)/include $(LUADIR)/lib
 	# Copy headers
 	cp -r $(LUAJIT_REPO)/src/*.h $(LUADIR)/include/
 	# Copy the static and shared libraries
 	cp $(LUAJIT_REPO)/src/libluajit.a $(LUADIR)/lib/
 	cp $(LUAJIT_REPO)/src/libluajit.so $(LUADIR)/lib/
+	# Create symlink for versioned library
 	ln -sf libluajit.so $(LUADIR)/lib/libluajit-5.1.so.2
 	# Clean up by removing the LuaJIT repo
 	rm -rf $(LUAJIT_REPO)
@@ -69,4 +78,4 @@ distclean: clean
 	rm -rf $(LUAJIT_REPO)
 
 # Phony targets
-.PHONY: all clean rebuild luajit luajit-repo distclean
+.PHONY: all clean rebuild luajit-build luajit-repo distclean
