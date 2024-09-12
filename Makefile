@@ -38,8 +38,8 @@ $(LUADIR)/lib:
 $(TARGET): $(SRC) $(LUADIR)/lib/libluajit.a | $(BINDIR) $(LUADIR)/lib
 	$(CC) $(CFLAGS) $(SRC) -o $(TARGET) $(LUA_LIBS) $(LDFLAGS)
 
-# Rebuild: Clean project, clone, build, and install LuaJIT, then build the program
-rebuild: clean luajit-build $(TARGET)
+# build-all: Clean project, clone, build, and install LuaJIT, then build the program
+build-all: clean luajit-build $(TARGET)
 
 # Clone LuaJIT repository
 luajit-repo:
@@ -72,10 +72,10 @@ clean:
 	fi
 
 # Clean LuaJIT files and project files
-distclean: clean
+clean-all: clean
 	rm -rf $(LUADIR)/lib/*
 	rm -rf $(LUADIR)/include/*
 	rm -rf $(LUAJIT_REPO)
 
 # Phony targets
-.PHONY: all clean rebuild luajit-build luajit-repo distclean
+.PHONY: all clean build-all luajit-build luajit-repo clean-all

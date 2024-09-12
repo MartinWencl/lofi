@@ -1,4 +1,10 @@
+#ifndef APP_STATE_H
+#define APP_STATE_H
+
 #include "theme.h"
+
+// Declare the global application state
+extern AppState app_state;
 
 typedef struct
 {
@@ -12,5 +18,7 @@ typedef struct
 {
         Theme *theme;
         int font_size;
-        bool show_icons;    
+        bool show_icons;
 } UIState;
+
+#endif // APP_STATE_H
