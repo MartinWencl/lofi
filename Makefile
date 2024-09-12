@@ -1,5 +1,6 @@
 # Compiler and flags
-CC = gcc
+# CC = gcc
+CC = clang
 CFLAGS = -I./luajit/include
 
 # Directories

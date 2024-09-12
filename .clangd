@@ -1,0 +1,5 @@
+CompileFlags:
+  Add: 
+    - "-I./luajit/include"
+    - "-L./luajit/lib"
+    - "-lluajit-5.1"
