@@ -6,12 +6,13 @@
     - go
         - [x] Basic fyne window, hide decorations
         - [x] Text input and a list of labels/buttons w/o decotaions?
-        - [ ] Setting  a callbacks on select
+        - [x]  Setting  a callbacks on select
         - [ ] Prepare for later styling
     - Lua
-        - [ ] Integrate the Golua library to interact with LuaJIT.
+        - [x] Integrate the Golua library to interact with LuaJIT.
         - [ ] Set up Lua environment and load the `lofi.lua` config file.
-        - [ ] Expose Go functions to Lua for configuring Lofi.
+            - TODO: Fix callbacks onSelect, onSubmit
+        - [x] Expose Go functions to Lua for configuring Lofi.
         - [ ] Design an API (v0.1 again MVP) inspired by Neovim for configuring Lofi.
             - TODO: Define API MVP
     - functionality
