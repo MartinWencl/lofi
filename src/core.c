@@ -1,59 +1,63 @@
 #include "core.h"
-#include "utils.h"
-#include "events.h"
+#include "lua_core.h"
+
 #include <string.h>
 #include <stdlib.h>
 
-void app_state_init(AppState* state) {
-    memset(state->input_text, 0, sizeof(state->input_text));
-    state->list_items = NULL;
-    state->list_count = 0;
-    state->list_scroll_index = 0;
+void InitAppState(AppState* state) {
+    memset(state->inputText, 0, sizeof(state->inputText));
+    state->listItems = NULL;
+    state->listCount = 0;
+    state->listScrollIndex = 0;
     state->focus.index = -1;
     state->focus.object = F_TEXTBOX;
     
     // Initial search to populate list
-    perform_search("", &state->list_items, &state->list_count);
+    //PerformSearch("", &state->listItems, &state->listCount);
+    TraceLog(LOG_DEBUG, "STATE: Initialized the general app state.");
 }
 
-void app_state_cleanup(AppState* state) {
-    ClearListViewExList(&state->list_items, &state->list_count);
+void CleanupAppState(AppState* state) {
+    ClearListViewExList(&state->listItems, &state->listCount);
 }
 
-void handle_app_event(AppState* state, AppEvent* event) {
-    switch (event->type) {
+void HandleAppEvent(AppState* state, ModeManager* modeManager, AppEvent event) {
+    switch (event.type) {
         case EVENT_SEARCH_TRIGGERED:
             // Clear previous results
-            ClearListViewExList(&state->list_items, &state->list_count);
+            ClearListViewExList(&state->listItems, &state->listCount);
             
             // Perform search
-            perform_search(state->input_text, &state->list_items, &state->list_count);
+            //PerformSearch(state->inputText, &state->listItems, &state->listCount);
+
+            // call lua callback
+            DispatchLuaEvent(state, modeManager, event.type);
             
             // Reset focus if results found
-            if (state->list_count > 0) {
+            if (state->listCount > 0) {
                 state->focus.index = 0;
                 state->focus.object = F_LIST;
             }
             break;
         
         case EVENT_FOCUS_CHANGED:
-            state->focus.index = event->data.focus.index;
-            state->focus.object = event->data.focus.object_type;
+            state->focus.index = event.data.focus.index;
+            state->focus.object = event.data.focus.objectType;
             break;
         
         case EVENT_ITEM_SELECTED:
-            // Handle item selection (e.g., logging, opening)
-            TraceLog(LOG_INFO, "Selected item at index: %d", event->data.selection.selected_index);
+            TraceLog(LOG_INFO, "Selected item at index: %d", event.data.selection.selectedIndex);
+            DispatchLuaEvent(state, modeManager, event.type);
             break;
         
         case EVENT_SCROLL:
             // Adjust scroll index based on wheel movement
-            state->list_scroll_index += event->data.scroll.scroll_amount;
+            state->listScrollIndex += event.data.scroll.scrollAmount;
             
             // Ensure scroll index remains in bounds
-            if (state->list_scroll_index < 0) state->list_scroll_index = 0;
-            else if (state->list_scroll_index >= state->list_count) 
-                state->list_scroll_index = state->list_count - 1;
+            if (state->listScrollIndex < 0) state->listScrollIndex = 0;
+            else if (state->listScrollIndex >= state->listCount) 
+                state->listScrollIndex = state->listCount - 1;
             break;
         
         default:
@@ -62,8 +66,8 @@ void handle_app_event(AppState* state, AppEvent* event) {
 }
 
 // Placeholder implementation - replace with actual search logic
-int perform_search(const char* query, char*** result_list, int* result_count) {
+int PerformSearch(const char* query, char*** resultList, int* resultCount) {
     // This would typically be replaced with your actual search implementation
-    Search(query, result_list, result_count);
+    Search(query, resultList, resultCount);
     return 0;
 }

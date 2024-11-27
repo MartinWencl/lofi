@@ -7,28 +7,19 @@
 
 #include "events.h"
 #include "core.h"
+#include "modes.h"
 
-#define MAX_MODES 64
-#define MAX_NAME_LENGTH 64
-#define MAX_PREFIX_LENGTH 16
-#define INPUT_TEXT_MAX_SIZE 256
+#ifndef lua_rawlen
+#define lua_rawlen(L, index) lua_objlen(L, (index))
+#endif
+
 #define MAX_LIST_ITEMS 1024
 
-typedef struct {
-    char prefix[MAX_PREFIX_LENGTH];
-    char name[MAX_NAME_LENGTH];
-    int callback_refs[NUM_EVENTS];
-} Mode;
+#define LUA_OK 0
 
-typedef struct {
-    Mode* currentMode;
-    Mode modes[MAX_MODES];
-    int modeCount;
-    lua_State* luaState;
-} ModeManager;
 
-int DispatchLuaEvent(AppState state, ModeManager modeManager, AppEventType event);
-lua_State* InitLua(const char* initPath);
+int DispatchLuaEvent(AppState *state, ModeManager *modeManager, AppEventType event);
+lua_State* InitLua(const char* initPath, ModeManager *modeManager);
 void InitModeManager(ModeManager *modeManager);
 
 #endif // LUA_CORE_H

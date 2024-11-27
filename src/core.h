@@ -2,7 +2,10 @@
 #define APP_CORE_H
 
 #include "events.h"
-#include "listview.h"
+#include "modes.h"
+#include "utils.h"
+
+#include "raylib.h"
 
 #include <string.h>
 #include <stdlib.h>
@@ -20,18 +23,18 @@ typedef struct Focus {
 } Focus;
 
 typedef struct {
-    char input_text[INPUT_TEXT_MAX_SIZE];
-    char **list_items;
-    int list_count;
-    int list_scroll_index;
+    char inputText[INPUT_TEXT_MAX_SIZE];
+    char **listItems;
+    int listCount;
+    int listScrollIndex;
     Focus focus;
 } AppState;
 
-void app_state_init(AppState* state);
-void app_state_cleanup(AppState* state);
+void InitAppState(AppState* state);
+void CleanupAppState(AppState* state);
 
-void handle_app_event(AppState* state, AppEvent* event);
+void HandleAppEvent(AppState* state, ModeManager* ModeManager, AppEvent event);
 
-int perform_search(const char* query, char*** result_list, int* result_count);
+int PerformSearch(const char* query, char*** result_list, int* result_count);
 
 #endif // APP_CORE_H

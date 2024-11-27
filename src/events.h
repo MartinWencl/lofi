@@ -20,20 +20,20 @@ typedef struct {
     AppEventType type;
     union {
         struct {
-            char* search_query;
+            char* searchQuery;
         } search;
         
         struct {
             int index;
-            int object_type;  // From existing Focus object type
+            int objectType;  // From existing Focus object type
         } focus;
         
         struct {
-            int selected_index;
+            int selectedIndex;
         } selection;
         
         struct {
-            int scroll_amount;
+            int scrollAmount;
         } scroll;
     } data;
 } AppEvent;
@@ -49,11 +49,11 @@ typedef struct {
 } EventQueue;
 
 // Event queue management functions
-void event_queue_init(EventQueue* queue);
-int event_queue_push(EventQueue* queue, AppEvent event);
-AppEvent event_queue_pop(EventQueue* queue);
-int event_queue_is_empty(EventQueue* queue);
+void InitEventQueue(EventQueue* queue);
+int EventQueuePush(EventQueue* queue, AppEvent event);
+AppEvent EventQueuePop(EventQueue* queue);
+int IsEventQueueEmpty(EventQueue* queue);
 
-char *getEventAsStr(AppEventType event_type);
+char *GetEventAsStr(AppEventType event_type);
 
 #endif // EVENTS_H

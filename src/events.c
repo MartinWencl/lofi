@@ -3,19 +3,22 @@
 #include <string.h>
 #include <stdlib.h>
 
+// just dbg info
+//TODO: do it better
 const char* eventStrs[] = {"EVENT_NONE", "EVENT_SEARCH_TRIGGERED", "EVENT_FOCUS_CHANGED", "EVENT_ITEM_SELECTED", "EVENT_SCROLL", "EVENT_EXIT"};
 
-char *getEventAsStr(AppEventType event_type) {
+char *GetEventAsStr(AppEventType event_type) {
     return eventStrs[event_type];
 }
 
-void event_queue_init(EventQueue* queue) {
+void InitEventQueue(EventQueue* queue) {
     queue->front = 0;
     queue->rear = -1;
     queue->size = 0;
+    TraceLog(LOG_DEBUG, "STATE: Initialized the event queue.");
 }
 
-int event_queue_push(EventQueue* queue, AppEvent event) {
+int EventQueuePush(EventQueue* queue, AppEvent event) {
     if (queue->size >= MAX_EVENT_QUEUE) {
         return 0;  // Queue is full
     }
@@ -24,14 +27,14 @@ int event_queue_push(EventQueue* queue, AppEvent event) {
     queue->events[queue->rear] = event;
     queue->size++;
     
-    TraceLog(LOG_DEBUG, "EVENT: Event pushed: %s", getEventAsStr(event.type));
+    TraceLog(LOG_DEBUG, "EVENT: Event pushed: %s", GetEventAsStr(event.type));
     return 1;
 }
 
-AppEvent event_queue_pop(EventQueue* queue) {
+AppEvent EventQueuePop(EventQueue* queue) {
     AppEvent event = {EVENT_NONE};
     
-    if (event_queue_is_empty(queue)) {
+    if (IsEventQueueEmpty(queue)) {
         return event;
     }
     
@@ -42,6 +45,6 @@ AppEvent event_queue_pop(EventQueue* queue) {
     return event;
 }
 
-int event_queue_is_empty(EventQueue* queue) {
+int IsEventQueueEmpty(EventQueue* queue) {
     return queue->size == 0;
 }
