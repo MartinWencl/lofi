@@ -1,0 +1,5 @@
+* TODO:
+
+- split main.c into input.c
+- read input and update the input text there when input field is focused
+- pass state to draw ui and just draw the text there

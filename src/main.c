@@ -4,6 +4,8 @@
 #include "listview.h"
 #include "lua_core.h"
 #include "modes.h"
+#include "startup.h"
+#include "ui.h"
 
 #define RAYGUI_IMPLEMENTATION 
 #include "raygui.h"
@@ -81,10 +83,16 @@ void ProcessInput(AppState* state, EventQueue* eventQueue) {
 
 int main(void) {    
     SetTraceLogLevel(LOG_DEBUG);
-    InitWindow(INIT_WIDTH, INIT_HEIGHT, APP_NAME);
-    SetTargetFPS(INIT_FPS);
-    SetWindowOpacity(INIT_OPACITY);
-    SetWindowState(FLAG_WINDOW_UNDECORATED);
+
+    WindowConfig config = {
+        .refreshRate = 60,
+        .windowPercentWidth = 0.8f,
+        .windowPercentHeight = 0.7f,
+        .opacity = 0.9f,
+        .decoration = false
+    };
+    
+    WindowDimensions windowDimensions = InitWindowConfig(&config, "lofi");
 
     AppState *state = (AppState *)malloc(sizeof(AppState));
     EventQueue *eventQueue = (EventQueue *)malloc(sizeof(EventQueue));
@@ -129,20 +137,7 @@ int main(void) {
         BeginDrawing();
         ClearBackground(RAYWHITE);
 
-        // Textbox
-        bool textBoxEditMode = (state->focus.object == F_TEXTBOX);
-        GuiTextBox((Rectangle){ 0, 0, INIT_WIDTH, INIT_HEIGHT * 0.2 }, 
-                   state->inputText, INPUT_TEXT_MAX_SIZE, textBoxEditMode);
-
-        // ListView
-        if (state->listCount > 0) {
-            int activeIndex = (state->focus.index == -1) ? 0 : state->focus.index;
-            ListViewEx((Rectangle){ 0, (INIT_HEIGHT * 0.2) + 10, INIT_WIDTH, 200 }, 
-                       (const char**)state->listItems, 
-                       state->listCount, 
-                       &activeIndex, 
-                       &state->listScrollIndex);
-        }
+        DrawUI(state, windowDimensions);
 
         EndDrawing();
     }

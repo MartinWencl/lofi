@@ -38,6 +38,9 @@ add_executable(lofi
     src/lua_core.c
     src/utils.c
     src/modes.c
+    src/startup.c
+    src/ui.c
+    src/inputbox.c
 )
 
 # Include directories
