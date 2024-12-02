@@ -1,21 +1,85 @@
 #include "ui.h"
 
+typedef enum {
+    SPLIT_HORIZONTAL,  // Split along width
+    SPLIT_VERTICAL     // Split along height
+} SplitDirection;
+
+typedef struct {
+    Rectangle first;
+    Rectangle second;
+} SplitRectResult;
+
+SplitRectResult SplitRectangle(Rectangle originalRect, float splitPercentage, SplitDirection direction) {
+    SplitRectResult result;
+    
+    if (direction == SPLIT_VERTICAL) {
+        // Split along width
+        result.first = (Rectangle){
+            .x = originalRect.x,
+            .y = originalRect.y,
+            .width = originalRect.width * splitPercentage,
+            .height = originalRect.height
+        };
+        
+        result.second = (Rectangle){
+            .x = originalRect.x + (originalRect.width * splitPercentage),
+            .y = originalRect.y,
+            .width = originalRect.width * (1.0f - splitPercentage),
+            .height = originalRect.height
+        };
+    } else { // SPLIT_VERTICAL
+        // Split along height
+        result.first = (Rectangle){
+            .x = originalRect.x,
+            .y = originalRect.y,
+            .width = originalRect.width,
+            .height = originalRect.height * splitPercentage
+        };
+        
+        result.second = (Rectangle){
+            .x = originalRect.x,
+            .y = originalRect.y + (originalRect.height * splitPercentage),
+            .width = originalRect.width,
+            .height = originalRect.height * (1.0f - splitPercentage)
+        };
+    }
+    
+    return result;
+}
+
+Rectangle GetRectWithMargins(Rectangle baseRect, WindowDimensions windowDimensions, 
+                              float leftMarginPercent, float topMarginPercent, 
+                              float rightMarginPercent, float bottomMarginPercent) 
+{
+    Rectangle marginRect = {
+        // X position: base left margin + left margin percentage of window width
+        .x = windowDimensions.width * leftMarginPercent,
+        
+        // Y position: base top margin + top margin percentage of window height
+        .y = windowDimensions.height * topMarginPercent,
+        
+        // Width: reduced by left and right margin percentages
+        .width = windowDimensions.width * (1.0f - leftMarginPercent - rightMarginPercent),
+        
+        // Height: reduced by top and bottom margin percentages
+        .height = windowDimensions.height * (1.0f - topMarginPercent - bottomMarginPercent)
+    };
+    
+    return marginRect;
+}
+
 void DrawUI(AppState* state, WindowDimensions windowDimensions) {
-    // Calculate dimensions for the textbox
-    Rectangle textBoxRect = (Rectangle){ 
-        windowDimensions.width * 0.05f, // 5% from the left side of the window
-        windowDimensions.height * 0.05f, // 5% from the top of the window
-        windowDimensions.width * 0.9f, // 90% width of the window
-        windowDimensions.height * 0.15f // 15% height of the window
+    Rectangle window = (Rectangle){
+        0,
+        0,
+        windowDimensions.width,
+        windowDimensions.height
     };
 
-    // Calculate dimensions for the list view
-    Rectangle listViewRect = (Rectangle){
-        windowDimensions.width * 0.05f, // 5% from the left side of the window
-        windowDimensions.height * 0.25f, // Below the textbox, with some space
-        windowDimensions.width * 0.9f, // 90% width of the window
-        windowDimensions.height * 0.7f // 70% height of the window, making up most of the remaining space
-    };
+    SplitRectResult splitRect = SplitRectangle(window, 0.15f,  SPLIT_HORIZONTAL);
+    Rectangle textBoxRect = splitRect.first;
+    Rectangle listViewRect = splitRect.second;
 
     // Drawing the textbox and list view
     bool textBoxEditMode = (state->focus.object == F_TEXTBOX);

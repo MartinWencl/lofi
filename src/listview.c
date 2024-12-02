@@ -32,7 +32,7 @@ void DrawTextCenteredDynamic(const char *text, Rectangle rec, int fontSize, Colo
 int ListViewEx(Rectangle bounds, const char **textItems, int itemCount, int *selected, int *scrollIndex) {
     // Calculate visible items based on a dynamic item height
     // Let's allocate 1/10th of the bounds height to each item, as an example
-    int itemHeight = bounds.height / 10;
+    int itemHeight = bounds.height / 5;
     int visibleItems = bounds.height / itemHeight;
     int result = -1;
 

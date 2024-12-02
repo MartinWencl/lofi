@@ -18,18 +18,6 @@
 
 // Function to translate raylib inputs to app events
 void ProcessInput(AppState* state, EventQueue* eventQueue) {
-    // Search trigger
-    // static bool prev_textbox_mode = true;
-    // bool current_textbox_mode = (state->focus.object == F_TEXTBOX);
-    
-    // if (prev_textbox_mode && !current_textbox_mode) {
-        // AppEvent search_event = {
-            // .type = EVENT_SEARCH_TRIGGERED
-        // };
-        // EventQueuePush(eventQueue, search_event);
-    // }
-    // prev_textbox_mode = current_textbox_mode;
-
     // Keyboard focus changes
     if (IsKeyPressed(KEY_DOWN) || IsKeyPressed(KEY_UP) || GetMouseWheelMove() != 0) {
         int newIndex = state->focus.index;
@@ -85,9 +73,9 @@ int main(void) {
     SetTraceLogLevel(LOG_DEBUG);
 
     WindowConfig config = {
-        .refreshRate = 60,
-        .windowPercentWidth = 0.8f,
-        .windowPercentHeight = 0.7f,
+        .refreshRate = 0,
+        .windowPercentWidth = 0.3f,
+        .windowPercentHeight = 0.2f,
         .opacity = 0.9f,
         .decoration = false
     };

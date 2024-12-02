@@ -1,5 +1,18 @@
-* TODO:
+# TODO:
 
 - split main.c into input.c
 - read input and update the input text there when input field is focused
 - pass state to draw ui and just draw the text there
+
+## Input
+
+create a system to register input events, with function callbacks to:
+    - check active condition
+    - dispatch event (focus for example)
+    - modify state (state get's passed from handler - text input for example)
+    - ? binding to an widget and activating only in focus
+
+## UI
+
+create few default widgets (textbox, listview) and have them compose dynamically from lua config using the raylib Rectangles.
+Have them then register input events on focus.

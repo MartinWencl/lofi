@@ -19,6 +19,11 @@ if(WIN32)
         COMMAND mingw32-make
         WORKING_DIRECTORY ${luajit_SOURCE_DIR}/src
     )
+elseif(UNIX)
+    execute_process(
+        COMMAND make
+        WORKING_DIRECTORY ${luajit_SOURCE_DIR}
+    )
 endif()
 
 # Fetch and Build Raylib
@@ -50,8 +55,12 @@ target_include_directories(lofi PRIVATE
 )
 
 # Ensure the built library is correctly referenced
-set(LUA_LIB_FILE "lua51.dll") # for static linking, use the .a file
-
+    if(WIN32)
+        set(LUA_LIB_FILE "lua51.dll") # for static linking, use the .a file
+    elseif(UNIX)
+        set(LUA_LIB_FILE "libluajit.so") # for static linking, use the .a file
+    endif()
+    
 # Link libraries
 target_link_libraries(lofi 
     raylib
@@ -60,15 +69,28 @@ target_link_libraries(lofi
 
 # Custom commands to install LuaJIT files
 set(LUAJIT_INSTALL_DIR "${CMAKE_BINARY_DIR}")
-add_custom_command(TARGET lofi POST_BUILD
-    COMMAND ${CMAKE_COMMAND} -E copy_if_different
-        "${luajit_SOURCE_DIR}/src/luajit.exe"
-        "${LUAJIT_INSTALL_DIR}"
-    COMMAND ${CMAKE_COMMAND} -E copy_if_different 
-        "${luajit_SOURCE_DIR}/src/lua51.dll"
-        "${LUAJIT_INSTALL_DIR}"
-    COMMENT "Copying LuaJIT binaries to the project build directory"
-)
+if(WIN32)
+    add_custom_command(TARGET lofi POST_BUILD
+        COMMAND ${CMAKE_COMMAND} -E copy_if_different
+            "${luajit_SOURCE_DIR}/src/luajit.exe"
+            "${LUAJIT_INSTALL_DIR}"
+        COMMAND ${CMAKE_COMMAND} -E copy_if_different 
+            "${luajit_SOURCE_DIR}/src/${LUA_LIB_FILE}"
+            "${LUAJIT_INSTALL_DIR}"
+        COMMENT "Copying LuaJIT binaries to the project build directory"
+    )
+elseif(UNIX)
+    add_custom_command(TARGET lofi POST_BUILD
+        COMMAND ${CMAKE_COMMAND} -E copy_if_different
+            "${luajit_SOURCE_DIR}/src/luajit"
+            "${LUAJIT_INSTALL_DIR}/luajit"
+        COMMAND ${CMAKE_COMMAND} -E copy_if_different 
+            "${luajit_SOURCE_DIR}/src/${LUA_LIB_FILE}"
+            "${LUAJIT_INSTALL_DIR}/libluajit-5.1.so.2"
+        COMMENT "Copying LuaJIT binaries to the project build directory"
+    )
+endif()
+
 add_custom_command(TARGET lofi POST_BUILD
     COMMAND ${CMAKE_COMMAND} -E make_directory "${LUAJIT_INSTALL_DIR}/lua/jit"
     COMMAND ${CMAKE_COMMAND} -E copy_directory
