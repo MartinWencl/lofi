@@ -1,20 +1,13 @@
 #ifndef UI_H
 #define UI_H
 
-#include "core.h"
-#include "listview.h"
-#include "inputbox.h"
+#include "state.h"
+#include "widgets/listview.h"
+#include "widgets/inputbox.h"
+#include "ui/window.h"
 
 #include "raygui.h"
 
-typedef struct Dimensions {
-    int width;
-    int height;
-} Dimensions;
-
-typedef Dimensions MonitorDimensions;
-typedef Dimensions WindowDimensions;
-
-void DrawUI(AppState* state, WindowDimensions windowDimensions);
+void DrawUI(State* state, Dimensions windowDimensions);
 
 #endif //UI_H

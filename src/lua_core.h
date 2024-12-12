@@ -5,8 +5,8 @@
 #include "lauxlib.h"
 #include "lualib.h"
 
-#include "events.h"
-#include "core.h"
+#include "callbacks/events.h"
+#include "state.h"
 #include "modes.h"
 
 #ifndef lua_rawlen
@@ -18,8 +18,8 @@
 #define LUA_OK 0
 
 
-int DispatchLuaEvent(AppState *state, ModeManager *modeManager, AppEventType event);
-lua_State* InitLua(const char* initPath, ModeManager *modeManager);
+int DispatchLuaEvent(State *state, ModeManager *modeManager, EventType event);
+void InitLua(const char* initPath, lua_State* L, ModeManager *modeManager);
 void InitModeManager(ModeManager *modeManager);
 
 #endif // LUA_CORE_H

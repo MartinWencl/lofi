@@ -1,10 +1,18 @@
-#include "startup.h"
+#include "ui/window.h"
 #include "raylib.h"
 
-MonitorDimensions GetSafeMonitorDimensions() {
+const WindowConfig DEFAULT_WINDOW_CONFIG = {
+    .refreshRate = 0,
+    .windowPercentWidth = 0.3f,
+    .windowPercentHeight = 0.2f,
+    .opacity = 0.9f,
+    .decoration = false
+};
+
+Dimensions GetSafeMonitorDimensions() {
     int monitor = GetCurrentMonitor();
 
-    MonitorDimensions dimensions = {0, 0};
+    Dimensions dimensions = {0, 0};
 
     if (GetMonitorCount() == 0) {
         TraceLog(LOG_WARNING, "No monitors detected. Using default dimensions.");
@@ -32,14 +40,12 @@ void CenterWindow() {
     SetWindowPosition(posX, posY);
 }
 
-WindowDimensions InitWindowConfig(const WindowConfig* config, char* appName) {
-    InitWindow(0, 0, appName);
-
+Dimensions SetWindowFromConfig(WindowConfig* config) {
     float windowPercentWidth = config->windowPercentWidth;
     float windowPercentHeight = config->windowPercentHeight;
 
-    MonitorDimensions dimensions = GetSafeMonitorDimensions();
-    
+    Dimensions dimensions = GetSafeMonitorDimensions();
+
     TraceLog(LOG_DEBUG, "Monitor width: %d", dimensions.width);
     TraceLog(LOG_DEBUG, "Monitor height: %d", dimensions.height);
 
@@ -60,7 +66,7 @@ WindowDimensions InitWindowConfig(const WindowConfig* config, char* appName) {
         TraceLog(LOG_ERROR, "Window height percentage out of bounds. Using default value.");
     }
 
-    WindowDimensions windowDimensions;
+    Dimensions windowDimensions;
     windowDimensions.width = (int)(dimensions.width * windowPercentWidth);
     windowDimensions.height = (int)(dimensions.height * windowPercentHeight);
 
@@ -84,4 +90,8 @@ WindowDimensions InitWindowConfig(const WindowConfig* config, char* appName) {
     }
 
     return windowDimensions;
+}
+
+Dimensions InitWindowFromConfig(const WindowConfig* config, char* appName) {
+    InitWindow(0, 0, appName);
 }

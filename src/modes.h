@@ -5,7 +5,7 @@
 #include "lauxlib.h"
 #include "lualib.h"
 
-#include "events.h"
+#include "callbacks/events.h"
 
 #define MAX_MODES 64
 #define MAX_NAME_LENGTH 64

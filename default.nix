@@ -15,7 +15,7 @@ in
 pkgs.mkShell {
   # NIX_DEBUG_INFO_DIRS = "${pkgs.lib.getLib myDebugInfoDirs}/lib/debug";
 
-  nativeBuildInputs = with pkgs; [ cmake ];
+  nativeBuildInputs = with pkgs; [ cmake clang gdb valgrind pkg-config ];
   buildInputs = [
     pkgs.xorg.libX11
     pkgs.xorg.xorgproto
@@ -28,9 +28,12 @@ pkgs.mkShell {
     pkgs.dlib
     pkgs.mlib
     pkgs.glibc
+    pkgs.fontconfig
+    pkgs.expat
   ];
 
   shellHook = ''
     export LD_LIBRARY_PATH="$PWD/build:$LD_LIBRARY_PATH"
+    export PKG_CONFIG_PATH="$PKG_CONFIG_PATH:${pkgs.fontconfig}/lib:${pkgs.expat}/lib"
   '';
 }

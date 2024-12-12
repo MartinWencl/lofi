@@ -4,6 +4,10 @@ project(lofi C)
 # Set C Standard
 set(CMAKE_C_STANDARD 11)
 
+if(NOT CMAKE_BUILD_TYPE)
+  set(CMAKE_BUILD_TYPE Debug)
+endif()
+
 # Fetch and Build LuaJIT with MinGW
 include(FetchContent)
 FetchContent_Declare(
@@ -34,19 +38,11 @@ FetchContent_Declare(
 )
 FetchContent_MakeAvailable(raylib)
 
-# Add executable
-add_executable(lofi 
-    src/main.c
-    src/core.c
-    src/events.c
-    src/listview.c
-    src/lua_core.c
-    src/utils.c
-    src/modes.c
-    src/startup.c
-    src/ui.c
-    src/inputbox.c
-)
+# Find all .c source files in the src directory and its subdirectories
+file(GLOB_RECURSE SOURCE_FILES src/*.c)
+
+# Create the executable with all found .c files
+add_executable(lofi ${SOURCE_FILES})
 
 # Include directories
 target_include_directories(lofi PRIVATE 
@@ -122,3 +118,12 @@ if(MSVC)
         MSVC_RUNTIME_LIBRARY "MultiThreaded$<$<CONFIG:Debug>:Debug>"
     )
 endif()
+
+# Find FontConfig package and include it
+find_package(PkgConfig REQUIRED)
+pkg_check_modules(FONTCONFIG REQUIRED fontconfig)
+
+# Link FontConfig libraries
+target_include_directories(lofi PRIVATE ${FONTCONFIG_INCLUDE_DIRS})
+target_link_libraries(lofi ${FONTCONFIG_LIBRARIES})
+target_compile_options(lofi PRIVATE ${FONTCONFIG_CFLAGS_OTHER})

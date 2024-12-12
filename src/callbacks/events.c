@@ -7,7 +7,7 @@
 //TODO: do it better
 const char* eventStrs[] = {"EVENT_NONE", "EVENT_SEARCH_TRIGGERED", "EVENT_FOCUS_CHANGED", "EVENT_ITEM_SELECTED", "EVENT_SCROLL", "EVENT_EXIT"};
 
-char *GetEventAsStr(AppEventType event_type) {
+char *GetEventAsStr(EventType event_type) {
     return eventStrs[event_type];
 }
 
@@ -18,7 +18,7 @@ void InitEventQueue(EventQueue* queue) {
     TraceLog(LOG_DEBUG, "STATE: Initialized the event queue.");
 }
 
-int EventQueuePush(EventQueue* queue, AppEvent event) {
+int EventQueuePush(EventQueue* queue, Event event) {
     if (queue->size >= MAX_EVENT_QUEUE) {
         return 0;  // Queue is full
     }
@@ -31,8 +31,8 @@ int EventQueuePush(EventQueue* queue, AppEvent event) {
     return 1;
 }
 
-AppEvent EventQueuePop(EventQueue* queue) {
-    AppEvent event = {EVENT_NONE};
+Event EventQueuePop(EventQueue* queue) {
+    Event event = {EVENT_NONE};
     
     if (IsEventQueueEmpty(queue)) {
         return event;

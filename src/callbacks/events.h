@@ -1,5 +1,5 @@
-#ifndef EVENTS_H
-#define EVENTS_H
+#ifndef CALLBACK_EVENTS_H
+#define CALLBACK_EVENTS_H
 
 #define NUM_EVENTS EVENT_EXIT + 1
 
@@ -13,11 +13,11 @@ typedef enum {
     // HACK: keep exit last, it's used to calc the number of elems
     // don't explicitly number events
     EVENT_EXIT
-} AppEventType;
+} EventType;
 
 // Struct to represent an application event
 typedef struct {
-    AppEventType type;
+    EventType type;
     union {
         struct {
             char* searchQuery;
@@ -36,13 +36,13 @@ typedef struct {
             int scrollAmount;
         } scroll;
     } data;
-} AppEvent;
+} Event;
 
 // Event queue structure
 #define MAX_EVENT_QUEUE 64
 
 typedef struct {
-    AppEvent events[MAX_EVENT_QUEUE];
+    Event events[MAX_EVENT_QUEUE];
     int front;
     int rear;
     int size;
@@ -50,10 +50,10 @@ typedef struct {
 
 // Event queue management functions
 void InitEventQueue(EventQueue* queue);
-int EventQueuePush(EventQueue* queue, AppEvent event);
-AppEvent EventQueuePop(EventQueue* queue);
+int EventQueuePush(EventQueue* queue, Event event);
+Event EventQueuePop(EventQueue* queue);
 int IsEventQueueEmpty(EventQueue* queue);
 
-char *GetEventAsStr(AppEventType event_type);
+char *GetEventAsStr(EventType event_type);
 
-#endif // EVENTS_H
+#endif // CALLBACK_EVENTS_H

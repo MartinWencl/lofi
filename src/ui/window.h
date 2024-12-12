@@ -1,15 +1,20 @@
-#ifndef STARTUP_H
-#define STARTUP_H
-
-#include "ui.h"
-
-#include "raylib.h"
+#ifndef UI_WINDOW_H
+#define UI_WINDOW_H
 
 #define DEFAULT_WINDOW_PERCENT_WIDTH 0.8
 #define DEFAULT_WINDOW_PERCENT_HEIGHT 0.7
 
 #define FALLBACK_WINDOW_WIDTH 600
 #define FALLBACK_WINDOW_HEIGHT 800
+
+#include <stdbool.h>
+
+typedef struct Dimensions {
+    int width;
+    int height;
+} Dimensions;
+
+typedef Dimensions MonitorDimensions;
 
 typedef struct {
     int refreshRate;             // Override refresh rate, 0 to use monitor's default
@@ -19,6 +24,8 @@ typedef struct {
     bool decoration;             // Window decoration (title bar and borders)
 } WindowConfig;
 
-WindowDimensions InitWindowConfig(const WindowConfig* config, char* appName);
+extern const WindowConfig DEFAULT_WINDOW_CONFIG;
 
-#endif // STARTUP_H
+Dimensions InitWindowFromConfig(const WindowConfig* config, char* appName); 
+
+#endif // UI_WINDOW_H

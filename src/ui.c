@@ -1,4 +1,5 @@
 #include "ui.h"
+#include <stdbool.h>
 
 typedef enum {
     SPLIT_HORIZONTAL,  // Split along width
@@ -48,7 +49,7 @@ SplitRectResult SplitRectangle(Rectangle originalRect, float splitPercentage, Sp
     return result;
 }
 
-Rectangle GetRectWithMargins(Rectangle baseRect, WindowDimensions windowDimensions, 
+Rectangle GetRectWithMargins(Rectangle baseRect, Dimensions windowDimensions, 
                               float leftMarginPercent, float topMarginPercent, 
                               float rightMarginPercent, float bottomMarginPercent) 
 {
@@ -69,7 +70,7 @@ Rectangle GetRectWithMargins(Rectangle baseRect, WindowDimensions windowDimensio
     return marginRect;
 }
 
-void DrawUI(AppState* state, WindowDimensions windowDimensions) {
+void DrawUI(State* state, Dimensions windowDimensions) {
     Rectangle window = (Rectangle){
         0,
         0,
@@ -83,12 +84,12 @@ void DrawUI(AppState* state, WindowDimensions windowDimensions) {
 
     // Drawing the textbox and list view
     bool textBoxEditMode = (state->focus.object == F_TEXTBOX);
-    DrawSimplifiedInputBox(textBoxRect, state->inputText, INPUT_TEXT_MAX_SIZE, textBoxEditMode);
+    DrawSimplifiedInputBox(textBoxRect, state->input, INPUT_TEXT_MAX_SIZE, textBoxEditMode);
 
     if (state->listCount > 0) {
         int activeIndex = (state->focus.index == -1) ? 0 : state->focus.index;
 
         // Update ListViewEx call to use new listViewRect
-        ListViewEx(listViewRect, (const char**)state->listItems, state->listCount, &activeIndex, &state->listScrollIndex);
+        ListViewEx(listViewRect, (const char**)state->list, state->listCount, &activeIndex, 0);
     }
 }

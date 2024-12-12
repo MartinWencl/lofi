@@ -1,3 +1,4 @@
+print("got here")
 lofi.register_mode({
     name = "example_mode",
     on_select = function(state)
@@ -9,10 +10,10 @@ lofi.register_mode({
 
         state.input_text = "Input Text"
         
-        -- Initialize or update listItems and listCount
-        state.listItems = state.listItems or {}
+        -- Initialize or update istItems and listCount
+        state.list = state.list or {}
         for i = 1, 10 do
-            state.listItems[i] = "result" .. i
+            state.list[i] = "result" .. i
         end
         state.list_count = 10 -- Update list count to match the number of items
         

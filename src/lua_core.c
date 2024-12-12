@@ -1,19 +1,23 @@
 #include "lua_core.h"
+#include "utils.h"
+#include "ui/window.h"
+#include "lua/window.h"
 #include <stdlib.h>
+#include <string.h>
 
 #define MODE_MANAGER_KEY "ModeManagerKey"
 
-static void PushAppStateToLua(lua_State* L, AppState* state) {
+static void PushStateToLua(lua_State* L, State* state) {
     lua_newtable(L);
     
     // Push input text
-    lua_pushstring(L, state->inputText);
+    lua_pushstring(L, state->input);
     lua_setfield(L, -2, "input_text");
     
     // Push list items
     lua_newtable(L);
     for (int i = 0; i < state->listCount; i++) {
-        lua_pushstring(L, state->listItems[i]);
+        lua_pushstring(L, state->list[i]);
         lua_rawseti(L, -2, i + 1);
     }
     lua_setfield(L, -2, "list_tems");
@@ -22,15 +26,12 @@ static void PushAppStateToLua(lua_State* L, AppState* state) {
     lua_pushinteger(L, state->listCount);
     lua_setfield(L, -2, "list_count");
     
-    lua_pushinteger(L, state->listScrollIndex);
-    lua_setfield(L, -2, "list_scroll_index");
-    
     lua_pushinteger(L, state->focus.index);
     lua_setfield(L, -2, "focus");
     TraceLog(LOG_DEBUG, "STATE: Pushed the state to lua.");
 }
 
-static void UpdateAppStateFromLua(lua_State* L, AppState* state) {
+static void UpdateStateFromLua(lua_State* L, State* state) {
     // Ensure we're working with a table
     luaL_checktype(L, -1, LUA_TTABLE);
     
@@ -38,31 +39,24 @@ static void UpdateAppStateFromLua(lua_State* L, AppState* state) {
     lua_getfield(L, -1, "input_text");
     if (!lua_isnil(L, -1)) {
         const char* input = lua_tostring(L, -1);
-        strncpy(state->inputText, input, INPUT_TEXT_MAX_SIZE - 1);
+        strncpy(state->input, input, INPUT_TEXT_MAX_SIZE - 1);
     }
     lua_pop(L, 1);
     
     // Clear existing list items and reset the count
-    ClearListViewExList(&(state->listItems), &(state->listCount));
+    ClearListViewExList(&(state->list), &(state->listCount));
 
     // Update list items
-    lua_getfield(L, -1, "listItems");
+    lua_getfield(L, -1, "list");
     if (!lua_isnil(L, -1)) {
         int listCount = lua_rawlen(L, -1);
         
         for (int i = 1; i <= listCount; i++) {
             lua_rawgeti(L, -1, i);
             const char* item = lua_tostring(L, -1);
-            AddToListViewExList(&(state->listItems), &(state->listCount), item);
+            AddToListViewExList(&(state->list), &(state->listCount), item);
             lua_pop(L, 1);
         }
-    }
-    lua_pop(L, 1);
-    
-    // Update list scroll index
-    lua_getfield(L, -1, "list_scroll_index");
-    if (!lua_isnil(L, -1)) {
-        state->listScrollIndex = lua_tointeger(L, -1);
     }
     lua_pop(L, 1);
     
@@ -75,7 +69,7 @@ static void UpdateAppStateFromLua(lua_State* L, AppState* state) {
     TraceLog(LOG_DEBUG, "STATE: Updated the state from lua.");
 }
 
-int DispatchLuaEvent(AppState *state, ModeManager *modeManager, AppEventType event) {
+int DispatchLuaEvent(State *state, ModeManager *modeManager, EventType event) {
     TraceLog(LOG_DEBUG, "LUA EVENT: Dispatching lua event.");
     
     //TEMP: Add switching modes to lua
@@ -95,7 +89,7 @@ int DispatchLuaEvent(AppState *state, ModeManager *modeManager, AppEventType eve
     lua_rawgeti(L, LUA_REGISTRYINDEX, ref);
     
     // Push current app state
-    PushAppStateToLua(L, state);
+    PushStateToLua(L, state);
     
     // Call the Lua function and check for errors
     if (lua_pcall(L, 1, 1, 0) != LUA_OK) {
@@ -113,7 +107,7 @@ int DispatchLuaEvent(AppState *state, ModeManager *modeManager, AppEventType eve
     }
     
     // Update app state from returned table
-    UpdateAppStateFromLua(L, state);
+    UpdateStateFromLua(L, state);
     
     // Remove the returned state table
     lua_pop(L, 1);
@@ -233,13 +227,7 @@ int InitLuaModule(lua_State* L) {
     return 1;
 }
 
-lua_State* InitLua(const char* initPath, ModeManager *modeManager) {
-    lua_State* L = luaL_newstate();
-    if(!L) {
-        TraceLog(LOG_ERROR, "LUA: Failed to create a lua state!");
-    }
-    TraceLog(LOG_DEBUG, "LUA: Created a lua state.");
-
+void InitLua(const char* initPath, lua_State* L, ModeManager *modeManager) {
     luaL_openlibs(L);
 
     lua_pushlightuserdata(L, modeManager);
@@ -249,16 +237,17 @@ lua_State* InitLua(const char* initPath, ModeManager *modeManager) {
     // Open the lofi module and push methods/vars/etc
     InitLuaModule(L);
     lua_setglobal(L, "lofi");
+    // this is more of a hack, but it makes sure the
+    // values exist before the file is run, so no need
+    // to worry about crashes on null values
+    ExportWindowConfigToLua(L, DEFAULT_WINDOW_CONFIG);
     TraceLog(LOG_DEBUG, "LUA: Exported the lua module.");
 
     // Load and run the init.lua file
     if (luaL_dofile(L, initPath) != LUA_OK) {
         TraceLog(LOG_ERROR, "LUA: Error loading init.lua: %s\n", lua_tostring(L, -1));
         lua_close(L);
-        return NULL;
     }
 
     TraceLog(LOG_DEBUG, "LUA: Loaded init.lua.");
-
-    return L;
 }
