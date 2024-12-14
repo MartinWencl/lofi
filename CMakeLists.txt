@@ -127,3 +127,7 @@ pkg_check_modules(FONTCONFIG REQUIRED fontconfig)
 target_include_directories(lofi PRIVATE ${FONTCONFIG_INCLUDE_DIRS})
 target_link_libraries(lofi ${FONTCONFIG_LIBRARIES})
 target_compile_options(lofi PRIVATE ${FONTCONFIG_CFLAGS_OTHER})
+
+enable_testing()
+
+add_subdirectory(tests/ui)

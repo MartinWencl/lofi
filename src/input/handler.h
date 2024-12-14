@@ -6,9 +6,6 @@
 #include "callbacks/events.h"
 
 typedef bool (*InputConditionFunc)(void);
-typedef Event (*InputEventGeneratorFunc)(State* state);
 typedef void (*InputStateModifierFunc)(State* state);
-
-void Temp();
 
 #endif // INPUT_HANDLER_H
