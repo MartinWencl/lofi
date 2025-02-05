@@ -80,15 +80,12 @@ void DrawUI(State* state, Dimensions windowDimensions) {
         windowDimensions.height
     };
 
-    SplitRectResult splitRect = SplitRectangle(window, 0.15f,  SPLIT_HORIZONTAL);
+    SplitRectResult splitRect = SplitRectangle(window, 0.25f,  SPLIT_HORIZONTAL);
     Rectangle textBoxRect = splitRect.first;
     Rectangle listViewRect = splitRect.second;
+
     bool textboxEditMode = state->focus.index == -1;
     
-    DrawInputBox(textBoxRect, state->input, INPUT_TEXT_MAX_SIZE, textboxEditMode);
-
-    if (state->listCount > 0) {
-        int activeIndex = (state->focus.index == -1) ? 0 : state->focus.index;
-        DrawListView(listViewRect, (const char**)state->list, state->listCount, &activeIndex, 0);
-    }
+    DrawInputBox(&state->ui, textBoxRect, state->input, INPUT_TEXT_MAX_SIZE, textboxEditMode);
+    DrawListView(&state->ui, listViewRect, (const char**)state->list, state->listCount, &state->focus.index, 0);
 }

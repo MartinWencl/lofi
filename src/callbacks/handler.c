@@ -7,9 +7,7 @@ void HandleEvent(State* state, ModeManager* modeManager, Event event) {
             // Clear previous results
             ClearListViewExList(&state->list, &state->listCount);
             
-            // Perform search
-            //PerformSearch(state->inputText, &state->list, &state->listCount);
-
+            // NOTE: Temporary search that lists files in current directory
             Search(state->input, &state->list, &state->listCount);
 
             // call lua callback
@@ -35,36 +33,3 @@ void HandleEvent(State* state, ModeManager* modeManager, Event event) {
             break;
     }
 }
-
-// handler.c
-// #include "callbacks/handler.h"
-//
-// void HandleEvent(State* state, ModeManager* modeManager, Event event) {
-//     switch (event.type) {
-//         case EVENT_SEARCH_TRIGGERED:
-//             DispatchLuaEvent(state, modeManager, EVENT_SEARCH_TRIGGERED);
-//             break;
-//             
-//         case EVENT_FOCUS_CHANGED:
-//             if (state->listCount > 0) {
-//                 state->focus.index += event.data;
-//                 if (state->focus.index >= state->listCount) 
-//                     state->focus.index = 0;
-//                 if (state->focus.index < 0) 
-//                     state->focus.index = state->listCount - 1;
-//                 
-//                 DispatchLuaEvent(state, modeManager, EVENT_FOCUS_CHANGED);
-//             }
-//             break;
-//             
-//         case EVENT_ITEM_SELECTED:
-//             if (state->listCount > 0 && state->focus.index >= 0) {
-//                 DispatchLuaEvent(state, modeManager, EVENT_ITEM_SELECTED);
-//             }
-//             break;
-//             
-//         case EVENT_EXIT:
-//             CloseWindow();
-//             break;
-//     }
-// }

@@ -60,27 +60,37 @@ void ProcessInput(State* state, EventQueue* eventQueue) {
         EventQueuePush(eventQueue, searchEvent);
     }
 
-
-        if (state->focus.index == -1) {
+    // Process text input when search bar is selected (focus = -1)
+    if (state->focus.index == -1 || state->focus.index >= 0) {
         // Handle character input
         int key = GetCharPressed();
         while (key > 0) {
-            // Add character to input
             int len = strlen(state->input);
             if (len < sizeof(state->input) - 1) {
                 state->input[len] = (char)key;
                 state->input[len + 1] = '\0';
             }
+
+            // Set focus to input box if focus is not on input box
+            if (state->focus.index >= 0) {
+                Event focus_event = {
+                    .type = EVENT_FOCUS_CHANGED,
+                    .data.focus.index = -1,
+                };
+                EventQueuePush(eventQueue, focus_event);
+            }
+
             key = GetCharPressed();
         }
 
         // Handle backspace separately
-        if (IsKeyPressed(KEY_BACKSPACE)) {
+        if (IsKeyPressed(KEY_BACKSPACE) && state->focus.index == -1) {
             TraceLog(LOG_DEBUG, "Backspace detected.");
             int len = strlen(state->input);
             if (len > 0) {
                 state->input[len - 1] = '\0';
             }
+
         }
     }
 }

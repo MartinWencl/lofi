@@ -19,7 +19,8 @@
 
 
 int DispatchLuaEvent(State *state, ModeManager *modeManager, EventType event);
-void InitLua(const char* initPath, lua_State* L);
+void InitLua(const char* initPath, ModeManager* modeManager, lua_State* L);
 void InitModeManager(ModeManager *modeManager);
+void LoadOptionsFromLua(State* state, lua_State* L);
 
 #endif // LUA_CORE_H

@@ -26,6 +26,21 @@ local inputbox = {
     }
 }
 
+lofi.log("From init.lua", lofi.log_level.DEBUG)
+
+lofi.opt.window = {
+    refresh_rate = 60,              -- Integer value for refresh rate
+    window_percent_width = 0.3,     -- Number between 0 and 1 for window width as screen percentage
+    window_percent_height = 0.2,    -- Number between 0 and 1 for window height as screen percentage
+    opacity = 0.2,                  -- Number between 0 and 1 for window opacity
+    decoration = true               -- Boolean for window decoration
+}
+
+lofi.opt.font = {
+    name = "JetBrains Mono Nerd Font",
+    size = 40,
+}
+
 -- lofi.register_mode({
 --     name = "example_mode",
 --     prefix = "e",

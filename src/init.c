@@ -28,20 +28,19 @@ void PrintConfiguration(const State* state) {
 bool TryInitialize(State* state, lua_State* L) {
     InitStateStruct(state);
 
-    InitLua("init.lua", L); 
+    InitLua("init.lua", &state->modes, L); 
     if(!L) {
         TraceLog(LOG_ERROR, "Failed to initialize lua!");
     }
-    TraceLog(LOG_DEBUG, "Lua initialized.");
+
+    LoadOptionsFromLua(state, L);
+
+    TraceLog(LOG_ERROR, "TEST OPACITY: %f", state->ui.config.window.opacity);
      
-    // LoadWindowConfigFromLua(L, &ui.config.window);
     Dimensions window = InitWindowFromConfig(&state->ui.config.window, "lofi");
     state->ui.loaded.window = window;
 
-    //TODO: Change to pass just the config/font
-    // LoadFontConfigFromLua(L, &ui);
-    // LoadFontFromState(&ui);
+    LoadFontFromState(&state->ui);
 
-    // LoadThemeFromLua(L, &ui);
     PrintConfiguration(state);
 }

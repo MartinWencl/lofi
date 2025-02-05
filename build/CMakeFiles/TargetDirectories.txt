@@ -1,3 +1,0 @@
-/home/martinw/Documents/lofi2/build/CMakeFiles/lofi.dir
-/home/martinw/Documents/lofi2/build/CMakeFiles/edit_cache.dir
-/home/martinw/Documents/lofi2/build/CMakeFiles/rebuild_cache.dir

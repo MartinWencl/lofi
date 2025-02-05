@@ -1,10 +1,23 @@
 #include "lua_core.h"
+#include "events.h"
+#include "font.h"
+#include "modes.h"
 #include "utils.h"
+
+#include "lua.h"
+#include "lualib.h"
+
 // #include "ui/window.h"
-// #include "lua/window.h"
+
+#include "lua/macros.h"
+#include "lua/window.h"
+#include "lua/theme.h"
+#include "lua/font.h"
+
 #include <stdlib.h>
 #include <string.h>
 
+#define MODE_MANAGER_KEY "MODE_MANAGER"
 
 static void PushStateToLua(lua_State* L, State* state) {
     lua_newtable(L);
@@ -130,74 +143,54 @@ int lofi_Log(lua_State *L) {
     return 0;
 }
 
+void LoadOptionsFromLua(State* state, lua_State* L) {
+    LoadWindowConfigFromLua(L, &state->ui.config.window);
+    LoadFontConfigFromLua(L, &state->ui);
+    LoadThemeFromLua(L, &state->ui);
+}
+
 int InitLuaModule(lua_State* L) {
-    lua_newtable(L);
+    luaopen_table(L);
+        LUA_SET_FUNCTION(lofi_Log, "log");
 
-    // Add event constants
-    lua_pushinteger(L, EVENT_NONE);
-    lua_setfield(L, -2, "EVENT_NONE");
-    lua_pushinteger(L, EVENT_SEARCH_TRIGGERED);
-    lua_setfield(L, -2, "EVENT_SEARCH_TRIGGERED");
-    lua_pushinteger(L, EVENT_FOCUS_CHANGED);
-    lua_setfield(L, -2, "EVENT_FOCUS_CHANGED");
-    lua_pushinteger(L, EVENT_ITEM_SELECTED);
-    lua_setfield(L, -2, "EVENT_ITEM_SELECTED");
-    lua_pushinteger(L, EVENT_SCROLL);
-    lua_setfield(L, -2, "EVENT_SCROLL");
-    lua_pushinteger(L, EVENT_EXIT);
-    lua_setfield(L, -2, "EVENT_EXIT");
+        LUA_SET_TABLE("log_level",
+            LUA_SET_INT(LOG_INFO, "INFO");
+            LUA_SET_INT(LOG_DEBUG, "DEBUG");
+            LUA_SET_INT(LOG_WARNING, "WARNING");
+            LUA_SET_INT(LOG_ERROR, "ERROR");
+        );
 
-    // Add mode management functions
-    // lua_pushcfunction(L, lofi_RegisterMode);
-    // lua_setfield(L, -2, "register_mode");
-
-    lua_pushcfunction(L, lofi_Log);
-    lua_setfield(L, -2, "log");
-    // lua_pushcfunction(L, lofi_switch_mode);
-    // lua_setfield(L, -2, "switch_mode");
-
-    // log_level
-    lua_newtable(L); 
-
-    lua_pushinteger(L, LOG_INFO);
-    lua_setfield(L, -2, "INFO");
-    lua_pushinteger(L, LOG_DEBUG);
-    lua_setfield(L, -2, "DEBUG");
-    lua_pushinteger(L, LOG_WARNING);
-    lua_setfield(L, -2, "WARNING");
-    lua_pushinteger(L, LOG_ERROR);
-    lua_setfield(L, -2, "ERROR");
-
-    lua_setfield(L, -2, "log_level");
+    lua_setglobal(L, "lofi");
 
     TraceLog(LOG_DEBUG, "LUA: Initialized the to-be exported lua module.");
     return 1;
 }
 
-void InitLua(const char* initPath, lua_State* L) {
+void RegisterModeManager(ModeManager* modeManager, lua_State* L)
+{
+    lua_pushlightuserdata(L, modeManager);
+    lua_setfield(L, LUA_REGISTRYINDEX, MODE_MANAGER_KEY);
+
+    TraceLog(LOG_DEBUG, "LUA MODES: Pushed the mode manager into user data.");
+}
+
+void InitLua(const char* initPath, ModeManager* modeManager, lua_State* L) {
     luaL_openlibs(L);
-
-    // TODO: If modeManager is needed in userdata then put that in a separate
-    // func after init
-    //
-    // lua_pushlightuserdata(L, modeManager);
-    // lua_setfield(L, LUA_REGISTRYINDEX, MODE_MANAGER_KEY);
-    // TraceLog(LOG_DEBUG, "LUA MODES: Pushed the mode manager into user data.");
-
-    // Open the lofi module and push methods/vars/etc
     InitLuaModule(L);
-    lua_setglobal(L, "lofi");
-    // this is more of a hack, but it makes sure the
-    // values exist before the file is run, so "no need"
-    // to worry about crashes on null values
-    // ExportWindowConfigToLua(L, DEFAULT_WINDOW_CONFIG);
-    TraceLog(LOG_DEBUG, "LUA: Exported the lua module.");
+    RegisterModeManager(modeManager, L);
 
-    // Load and run the init.lua file
+    // this is more of a hack, but it makes sure the
+    // values exist before the file is run
+    // The tables are otherwise not present in lua -- 
+    // either this or create a separate function to generate the 
+    // empty table structure (lofi.opt ...)
+    ExportWindowConfigToLua(L, DEFAULT_WINDOW_CONFIG);
+    ExportFontConfigToLua(L, (FontConfig) {"default", 20});
+
     if (luaL_dofile(L, initPath) != LUA_OK) {
         TraceLog(LOG_ERROR, "LUA: Error loading init.lua: %s\n", lua_tostring(L, -1));
         lua_close(L);
     }
 
-    TraceLog(LOG_DEBUG, "LUA: Loaded init.lua.");
+    TraceLog(LOG_DEBUG, "Lua initialized, init.lua OK.");
 }

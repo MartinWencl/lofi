@@ -46,9 +46,6 @@ Dimensions SetWindowFromConfig(const WindowConfig* config) {
 
     Dimensions dimensions = GetSafeMonitorDimensions();
 
-    TraceLog(LOG_DEBUG, "Monitor width: %d", dimensions.width);
-    TraceLog(LOG_DEBUG, "Monitor height: %d", dimensions.height);
-
     TraceLog(LOG_DEBUG, "Configured window settings:");
     TraceLog(LOG_DEBUG, "Refresh Rate: %s", config->refreshRate > 0 ? TextFormat("%d", config->refreshRate) : "Monitor Default");
     TraceLog(LOG_DEBUG, "Width Percent: %f", windowPercentWidth);
@@ -72,9 +69,6 @@ Dimensions SetWindowFromConfig(const WindowConfig* config) {
 
     SetWindowSize(windowDimensions.width, windowDimensions.height);
     CenterWindow();
-
-    TraceLog(LOG_DEBUG, "Window width: %i", windowDimensions.width);
-    TraceLog(LOG_DEBUG, "Window height: %i", windowDimensions.height);
 
     SetWindowOpacity(config->opacity);
 
