@@ -2,7 +2,7 @@
 #define STATE_H
 
 #include "callbacks/events.h"
-#include "modes.h"
+#include "mode_manager.h"
 // #include "ui/focus.h"
 #include "ui/state.h"
 

@@ -1,7 +1,7 @@
 #include "lua_core.h"
 #include "events.h"
 #include "font.h"
-#include "modes.h"
+#include "mode_manager.h"
 #include "utils.h"
 
 #include "lua.h"
@@ -13,11 +13,10 @@
 #include "lua/window.h"
 #include "lua/theme.h"
 #include "lua/font.h"
+#include "lua/modes.h"
 
 #include <stdlib.h>
 #include <string.h>
-
-#define MODE_MANAGER_KEY "MODE_MANAGER"
 
 static void PushStateToLua(lua_State* L, State* state) {
     lua_newtable(L);
@@ -152,6 +151,7 @@ void LoadOptionsFromLua(State* state, lua_State* L) {
 int InitLuaModule(lua_State* L) {
     luaopen_table(L);
         LUA_SET_FUNCTION(lofi_Log, "log");
+        LUA_SET_FUNCTION(lofi_RegisterMode, "register_mode");
 
         LUA_SET_TABLE("log_level",
             LUA_SET_INT(LOG_INFO, "INFO");

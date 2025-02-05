@@ -5,9 +5,6 @@
 #include "lauxlib.h"
 #include "lualib.h"
 
-#include "callbacks/events.h"
-// #include "widgets/definition.h"
-
 #define MAX_MODES 64
 #define MAX_NAME_LENGTH 64
 #define MAX_PREFIX_LENGTH 16

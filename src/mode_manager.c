@@ -1,4 +1,4 @@
-#include "modes.h"
+#include "mode_manager.h"
 #include <stdlib.h>
 #include <string.h>
 #include "raylib.h"

@@ -7,7 +7,7 @@
 
 // #include "callbacks/events.h"
 #include "state.h"
-#include "modes.h"
+#include "mode_manager.h"
 
 #ifndef lua_rawlen
 #define lua_rawlen(L, index) lua_objlen(L, (index))

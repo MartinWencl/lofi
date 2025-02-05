@@ -40,20 +40,9 @@ lofi.opt.font = {
     name = "JetBrains Mono Nerd Font",
     size = 40,
 }
+lofi.register_mode({name = "test", prefix = "t"})
 
 -- lofi.register_mode({
 --     name = "example_mode",
 --     prefix = "e",
---     -- layout = lofi.containers.verticallist {
---     --     inputbox,
---     --     listview,
---     -- }
---     layout = {
---         type = "vertical_list",
---         spacing = 0,
---         widgets = {
---             inputbox,
---             -- listview
---         }
---     }
 -- })

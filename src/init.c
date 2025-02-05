@@ -41,6 +41,5 @@ bool TryInitialize(State* state, lua_State* L) {
     state->ui.loaded.window = window;
 
     LoadFontFromState(&state->ui);
-
     PrintConfiguration(state);
 }
