@@ -47,3 +47,7 @@ void LoadFontFromState(UIState* ui) {
     // Clean up FontConfig
     FcFini();
 }
+
+void FreeFont(struct UIState* ui) {
+    UnloadFont(ui->loaded.font);
+}

@@ -7,8 +7,6 @@
 #include "lua.h"
 #include "lualib.h"
 
-// #include "ui/window.h"
-
 #include "lua/macros.h"
 #include "lua/window.h"
 #include "lua/theme.h"
@@ -31,11 +29,11 @@ static void PushStateToLua(lua_State* L, State* state) {
         lua_pushstring(L, state->list[i]);
         lua_rawseti(L, -2, i + 1);
     }
-    lua_setfield(L, -2, "list_tems");
+    lua_setfield(L, -2, "list");
     
-    // Push other state fields
-    lua_pushinteger(L, state->listCount);
-    lua_setfield(L, -2, "list_count");
+    // // Push other state fields
+    // lua_pushinteger(L, state->listCount);
+    // lua_setfield(L, -2, "list_count");
     
     lua_pushinteger(L, state->focus.index);
     lua_setfield(L, -2, "focus");
@@ -80,57 +78,69 @@ static void UpdateStateFromLua(lua_State* L, State* state) {
     TraceLog(LOG_DEBUG, "STATE: Updated the state from lua.");
 }
 
-int DispatchLuaEvent(State *state, ModeManager *modeManager, EventType event) {
-    TraceLog(LOG_DEBUG, "LUA EVENT: Dispatching lua event.");
-    
-    //TEMP: Add switching modes to lua
-    // modeManager->currentMode = &(modeManager->modes[0]); if(modeManager->currentMode == NULL) {
-    //     TraceLog(LOG_ERROR, "LUA EVENT: No current mode set!");
-    //     return 0;
-    // }
-    //
-    // int ref = modeManager->currentMode->callback_refs[event];
-    //
-    // if (ref == LUA_NOREF || !modeManager->luaState) return 0;
-    //
-    // lua_State* L = modeManager->luaState;
-    // 
-    // lua_rawgeti(L, LUA_REGISTRYINDEX, ref);
-    // 
-    // // Push current app state
-    // PushStateToLua(L, state);
-    // 
-    // // Call the Lua function and check for errors
-    // if (lua_pcall(L, 1, 1, 0) != LUA_OK) {
-    //     const char *errorMessage = lua_tostring(L, -1);
-    //     TraceLog(LOG_ERROR, "LUA EVENT: Failed to call the corresponding lua function! Error: %s", errorMessage);
-    //     lua_pop(L, 1);
-    //     return 0;
-    // }
-    //
-    // // Check if the function returned exactly one table
-    // if (lua_type(L, -1) != LUA_TTABLE) {
-    //     TraceLog(LOG_ERROR, "LUA EVENT: Function did not return a table!");
-    //     lua_pop(L, 1); // Remove the non-table return value
-    //     return 0;
-    // }
-    // 
-    // // Update app state from returned table
-    // UpdateStateFromLua(L, state);
-    // 
-    // // Remove the returned state table
-    // lua_pop(L, 1);
-    
-    return 1;
+int DispatchLuaEvent(lua_State* L, State* state, Mode* mode, EventType EventType) {
+    if (!state || !mode) {
+        TraceLog(LOG_ERROR, "LUA EVENT: Invalid state or no current mode!");
+        return 0;
+    }
+
+    Mode* currentMode = mode;
+    TraceLog(LOG_DEBUG, "LUA EVENT: Dispatching %s event for mode '%s'", 
+             GetEventAsStr(EventType), currentMode->name);
+
+    const char* callbackName = GetEventAsStr(EventType);
+
+    Callback* callback = GetCallback(currentMode, callbackName);
+    if (!callback || callback->refCount == 0) {
+        TraceLog(LOG_DEBUG, "LUA EVENT: No callbacks registered for %s", callbackName);
+        return 1; // Not an error, just no callbacks
+    }
+
+    if (!L) {
+        TraceLog(LOG_ERROR, "LUA EVENT: No Lua state available!");
+        return 0;
+    }
+
+    int success = 1;
+    // Execute all callbacks registered for this event
+    for (int i = 0; i < callback->refCount; i++) {
+        int ref = callback->luaRefs[i];
+        
+        // Get the callback function from registry
+        lua_rawgeti(L, LUA_REGISTRYINDEX, ref);
+        if (!lua_isfunction(L, -1)) {
+            TraceLog(LOG_ERROR, "LUA EVENT: Invalid callback reference for %s", callbackName);
+            lua_pop(L, 1);
+            success = 0;
+            continue;
+        }
+
+        // Push current app state as second argument
+        PushStateToLua(L, state);
+
+        // Call the function with event table and state table as arguments
+        if (lua_pcall(L, 1, 1, 0) != LUA_OK) {
+            const char* errorMessage = lua_tostring(L, -1);
+            TraceLog(LOG_ERROR, "LUA EVENT: Error in callback execution: %s", errorMessage);
+            lua_pop(L, 1);
+            success = 0;
+            continue;
+        }
+
+        // Handle return value if it's a table (updated state)
+        if (lua_istable(L, -1)) {
+            UpdateStateFromLua(L, state);
+        }
+        lua_pop(L, 1); // Remove return value
+    }
+
+    return success;
 }
 
-
-
 int lofi_Log(lua_State *L) {
-    // Check if exactly two arguments are provided
     if (lua_gettop(L) != 2) {
         lua_pushstring(L, "Requires two arguments: log_level and log_message");
-        lua_error(L); // Raise Lua error
+        lua_error(L);
         return 0; // This line is not actually reached because lua_error does a longjmp.
     }
 

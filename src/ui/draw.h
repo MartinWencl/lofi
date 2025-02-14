@@ -13,6 +13,6 @@
 #define CURSOR_BLINK_RATE 0.5f
 
 void DrawInputBox(UIState* state, Rectangle bounds, char* text, int maxSize, bool captureInput);
-void DrawListView(UIState* state, Rectangle bounds, const char** items, int count, int* selectedIndex, int scrollIndex);
+void DrawListView(UIState* state, Rectangle bounds, const char** items, int count, int* selectedIndex);
 
 #endif // UI_DRAW_H

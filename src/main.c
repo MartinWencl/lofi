@@ -14,12 +14,6 @@
 // #include "raygui.h"
 
 int main(void) {    
-    glfwInitHint(GLFW_PLATFORM, GLFW_PLATFORM_X11);
-    if (!glfwInit())
-    {
-        // Handle initialization failure
-    }
-
     SetTraceLogLevel(LOG_DEBUG);
 
     State state;
@@ -32,7 +26,7 @@ int main(void) {
 
         while (!IsEventQueueEmpty(&state.eventQueue)) {
             Event event = EventQueuePop(&state.eventQueue);
-            HandleEvent(&state, &state.modes, event);
+            HandleEvent(L, &state, &state.modes, event);
         }
 
         BeginDrawing();
@@ -40,7 +34,7 @@ int main(void) {
         EndDrawing();
     }
 
-    CleanupAppState(&state);
+    CleanupAppState(L, &state);
     CloseWindow();
 
     return 0;

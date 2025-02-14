@@ -87,5 +87,5 @@ void DrawUI(State* state, Dimensions windowDimensions) {
     bool textboxEditMode = state->focus.index == -1;
     
     DrawInputBox(&state->ui, textBoxRect, state->input, INPUT_TEXT_MAX_SIZE, textboxEditMode);
-    DrawListView(&state->ui, listViewRect, (const char**)state->list, state->listCount, &state->focus.index, 0);
+    DrawListView(&state->ui, listViewRect, (const char**)state->list, state->listCount, &state->focus.index);
 }

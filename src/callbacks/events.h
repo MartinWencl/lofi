@@ -2,44 +2,28 @@
 #define CALLBACK_EVENTS_H
 
 #define NUM_EVENTS EVENT_EXIT + 1
+#define MAX_EVENT_QUEUE 64
 
 typedef enum {
     EVENT_NONE = 0,
     EVENT_SEARCH_TRIGGERED,
-    EVENT_FOCUS_CHANGED,
     EVENT_ITEM_SELECTED,
-    EVENT_SCROLL,
+    EVENT_FOCUS_CHANGED,
     
     // HACK: keep exit last, it's used to calc the number of elems
     // don't explicitly number events
     EVENT_EXIT
 } EventType;
 
-// Struct to represent an application event
 typedef struct {
     EventType type;
-    union {
-        struct {
-            char* searchQuery;
-        } search;
-        
+    struct {
         struct {
             int index;
             int objectType;  // From existing Focus object type
         } focus;
-        
-        struct {
-            int selectedIndex;
-        } selection;
-        
-        struct {
-            int scrollAmount;
-        } scroll;
     } data;
 } Event;
-
-// Event queue structure
-#define MAX_EVENT_QUEUE 64
 
 typedef struct {
     Event events[MAX_EVENT_QUEUE];

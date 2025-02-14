@@ -3,9 +3,8 @@
 #include <string.h>
 #include <stdlib.h>
 
-// just dbg info
 //TODO: do it better
-const char* eventStrs[] = {"EVENT_NONE", "EVENT_SEARCH_TRIGGERED", "EVENT_FOCUS_CHANGED", "EVENT_ITEM_SELECTED", "EVENT_SCROLL", "EVENT_EXIT"};
+const char* eventStrs[] = {"EVENT_NONE", "on_search", "on_select", "on_focus_change", "EVENT_EXIT"};
 
 char *GetEventAsStr(EventType event_type) {
     return eventStrs[event_type];

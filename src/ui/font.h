@@ -11,5 +11,6 @@ typedef struct {
 } FontConfig;
 
 void LoadFontFromState(struct UIState* ui);
+void FreeFont(struct UIState* ui);
 
 #endif // UI_FONT_H

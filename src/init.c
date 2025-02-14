@@ -31,15 +31,17 @@ bool TryInitialize(State* state, lua_State* L) {
     InitLua("init.lua", &state->modes, L); 
     if(!L) {
         TraceLog(LOG_ERROR, "Failed to initialize lua!");
+        return false;
     }
 
     LoadOptionsFromLua(state, L);
 
-    TraceLog(LOG_ERROR, "TEST OPACITY: %f", state->ui.config.window.opacity);
-     
+    // Later redo this into some `SetOptionsFromLua()`
     Dimensions window = InitWindowFromConfig(&state->ui.config.window, "lofi");
     state->ui.loaded.window = window;
-
     LoadFontFromState(&state->ui);
+
     PrintConfiguration(state);
+
+    return true;
 }

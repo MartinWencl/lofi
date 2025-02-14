@@ -1,7 +1,23 @@
 #include "input/definitions.h"
 #include "callbacks/events.h"
 #include "state.h"
+
+#include "raylib.h"
 #include <string.h>
+
+bool CheckKey(Key key) {
+    if (!IsKeyDown(key.key)) {
+        return false;
+    }
+
+    for (int i = 0; i < MAX_ACTIVE_MODIFIERS; i++) {
+        if (!IsKeyDown(key.active_modifiers[i])) {
+            return false;
+        }
+    }
+
+    return true;
+}
 
 void ProcessInput(State* state, EventQueue* eventQueue) {
     // Keyboard focus changes
@@ -22,14 +38,13 @@ void ProcessInput(State* state, EventQueue* eventQueue) {
         else if (newIndex >= state->listCount)
             newIndex = state->listCount - 1;
 
-        // Scroll event
-        if (GetMouseWheelMove() != 0) {
-            Event scrollEvent = {
-                .type = EVENT_SCROLL,
-                .data.scroll.scrollAmount = (int)GetMouseWheelMove()
-            };
-            EventQueuePush(eventQueue, scrollEvent);
-        }
+        // if (GetMouseWheelMove() != 0) {
+        //     Event scrollEvent = {
+        //         .type = EVENT_SCROLL,
+        //         // .data.scroll.scrollAmount = (int)GetMouseWheelMove()
+        //     };
+        //     EventQueuePush(eventQueue, scrollEvent);
+        // }
 
         // Focus change event
         Event focus_event = {
@@ -45,7 +60,6 @@ void ProcessInput(State* state, EventQueue* eventQueue) {
 
         Event selectEvent = {
             .type = EVENT_ITEM_SELECTED,
-            .data.selection.selectedIndex = state->focus.index
         };
         EventQueuePush(eventQueue, selectEvent);
     }
@@ -74,8 +88,8 @@ void ProcessInput(State* state, EventQueue* eventQueue) {
             // Set focus to input box if focus is not on input box
             if (state->focus.index >= 0) {
                 Event focus_event = {
-                    .type = EVENT_FOCUS_CHANGED,
-                    .data.focus.index = -1,
+                    // .type = EVENT_FOCUS_CHANGED,
+                    // .data.focus.index = -1,
                 };
                 EventQueuePush(eventQueue, focus_event);
             }

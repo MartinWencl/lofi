@@ -26,6 +26,7 @@ pkgs.mkShell {
     pkgs.luajit
     pkgs.raylib
     pkgs.glfw
+    pkgs.uthash
   ];
 
   shellHook = ''
@@ -33,6 +34,7 @@ pkgs.mkShell {
     export LD_LIBRARY_PATH="${pkgs.glibc}/lib:$LD_LIBRARY_PATH"
     export LD_LIBRARY_PATH="${pkgs.fontconfig}/lib:$LD_LIBRARY_PATH"
     export LD_LIBRARY_PATH="${pkgs.glfw}/lib:$LD_LIBRARY_PATH"
-    export PKG_CONFIG_PATH="$PKG_CONFIG_PATH:${pkgs.glfw}/lib:${pkgs.fontconfig}/lib:${pkgs.expat}/lib:${pkgs.luajit}/lib:${pkgs.raylib}/lib:${pkgs.glfw3}/lib"
+    export LD_LIBRARY_PATH="${pkgs.uthash}/lib:$LD_LIBRARY_PATH"
+    export PKG_CONFIG_PATH="$PKG_CONFIG_PATH:${pkgs.glfw}/lib:${pkgs.fontconfig}/lib:${pkgs.expat}/lib:${pkgs.luajit}/lib:${pkgs.raylib}/lib:${pkgs.glfw3}/lib:${pkgs.uthash}/include""
   '';
 }

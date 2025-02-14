@@ -2,11 +2,13 @@
 #define STATE_H
 
 #include "callbacks/events.h"
+#include "lua.h"
 #include "mode_manager.h"
 // #include "ui/focus.h"
 #include "ui/state.h"
 
 #define INPUT_TEXT_MAX_SIZE 256
+#define MAX_NUMBER_OF_ESC_KEYS 64
 
 typedef struct {
     int index; 
@@ -14,8 +16,10 @@ typedef struct {
 
 typedef struct {
     char input[INPUT_TEXT_MAX_SIZE];
+
     char **list;
     int listCount;
+    int listScrollIndex;
 
     Focus focus;
     // FocusManager focus;
@@ -26,6 +30,6 @@ typedef struct {
 } State;
 
 void InitStateStruct(State* state);
-void CleanupAppState(State* state);
+void CleanupAppState(lua_State* L, State* state);
 
 #endif // STATE_H

@@ -83,22 +83,33 @@ void DrawInputBox(UIState* state, Rectangle bounds, char* text, int maxSize, boo
     }
 }
 
-void DrawListView(UIState* state, Rectangle bounds, const char** items, int count, int* selectedIndex, int scrollIndex) {
+void DrawListView(UIState* state, Rectangle bounds, const char** items, int count, int* selectedIndex) {
     // Draw background
     DrawRectangleRec(bounds, state->loaded.theme.background);
-
-    if(selectedIndex < 0) {
+    if(*selectedIndex < 0) {
         return;
     }
 
     // Calculate item height to fit approximately 5 items, but ensure it fits within bounds
     int visibleItems = 5;
     float itemHeight = bounds.height / visibleItems;
-
     // Ensure item height is not smaller than the font size
     if (itemHeight < state->config.font.size) {
         itemHeight = state->config.font.size;
         visibleItems = (int)(bounds.height / itemHeight);
+    }
+
+    // Calculate scroll position based on focused item
+    int scrollIndex = *selectedIndex - (visibleItems / 2);
+    
+    // Clamp scroll index to valid range
+    if (scrollIndex < 0) {
+        scrollIndex = 0;
+    }
+    int maxScroll = count - visibleItems;
+    if (maxScroll < 0) maxScroll = 0;
+    if (scrollIndex > maxScroll) {
+        scrollIndex = maxScroll;
     }
 
     int endIndex = scrollIndex + visibleItems;
@@ -112,12 +123,10 @@ void DrawListView(UIState* state, Rectangle bounds, const char** items, int coun
             bounds.width,
             itemHeight
         };
-
         // Draw selection highlight
         if (i == *selectedIndex) {
             DrawRectangleRec(itemBounds, state->loaded.theme.selected);
         }
-
         // Draw item text
         Vector2 textPos = {
             itemBounds.x + PADDING,
@@ -136,11 +145,9 @@ void DrawListView(UIState* state, Rectangle bounds, const char** items, int coun
             scrollbarWidth,
             bounds.height
         };
-
-        float scrollPercent = (float)scrollIndex / (float)(count - visibleItems);
+        float scrollPercent = maxScroll > 0 ? (float)scrollIndex / (float)maxScroll : 0;
         float scrollHandleHeight = (float)visibleItems / (float)count * bounds.height;
         float scrollHandleY = bounds.y + scrollPercent * (bounds.height - scrollHandleHeight);
-
         DrawRectangleRec(scrollbarBounds, (Color){ 64, 64, 64, 255 });
         DrawRectangle(
             scrollbarBounds.x,

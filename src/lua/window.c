@@ -33,13 +33,5 @@ void LoadWindowConfigFromLua(lua_State *L, WindowConfig *config) {
                         DEFAULT_WINDOW_CONFIG.opacity);
     LUA_GET_BOOL_FIELD(config->decoration, "decoration", 
                        DEFAULT_WINDOW_CONFIG.decoration);
-
-    TraceLog(LOG_INFO, "LUA: Loaded window config values from lua:");
-    TraceLog(LOG_INFO, "LUA: Loaded - Refresh Rate: %d", config->refreshRate);
-    TraceLog(LOG_INFO, "LUA: Loaded - Window Percent Width: %f", config->windowPercentWidth);
-    TraceLog(LOG_INFO, "LUA: Loaded - Window Percent Height: %f", config->windowPercentHeight);
-    TraceLog(LOG_INFO, "LUA: Loaded - Opacity: %f", config->opacity);
-    TraceLog(LOG_INFO, "LUA: Loaded - Decoration: %s", config->decoration ? "true" : "false");
-
     LUA_POP(3);  // Remove lofi, opt, and window tables
 }
