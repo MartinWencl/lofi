@@ -4,14 +4,12 @@
 #include <GLFW/glfw3.h>
 
 #include "init.h"
+#include "cleanup.h"
 #include "state.h"
 #include "callbacks/events.h"
 #include "callbacks/handler.h"
 #include "input/definitions.h"
 #include "ui.h"
-
-// #define RAYGUI_IMPLEMENTATION 
-// #include "raygui.h"
 
 int main(void) {    
     SetTraceLogLevel(LOG_DEBUG);
@@ -19,7 +17,10 @@ int main(void) {
     State state;
     lua_State *L = luaL_newstate();
     
-    TryInitialize(&state, L);
+    if (!TryInitialize(&state, L)) {
+        TraceLog(LOG_ERROR, "Failed to initialize!");
+        return 1;
+    }
     
     while (!WindowShouldClose()) {
         ProcessInput(&state, &state.eventQueue);
@@ -34,8 +35,6 @@ int main(void) {
         EndDrawing();
     }
 
-    CleanupAppState(L, &state);
-    CloseWindow();
-
+    Cleanup(L, &state);
     return 0;
 }

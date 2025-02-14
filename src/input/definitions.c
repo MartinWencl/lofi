@@ -5,20 +5,6 @@
 #include "raylib.h"
 #include <string.h>
 
-bool CheckKey(Key key) {
-    if (!IsKeyDown(key.key)) {
-        return false;
-    }
-
-    for (int i = 0; i < MAX_ACTIVE_MODIFIERS; i++) {
-        if (!IsKeyDown(key.active_modifiers[i])) {
-            return false;
-        }
-    }
-
-    return true;
-}
-
 void ProcessInput(State* state, EventQueue* eventQueue) {
     // Keyboard focus changes
     if (IsKeyPressed(KEY_DOWN) || IsKeyPressed(KEY_UP) || GetMouseWheelMove() != 0) {

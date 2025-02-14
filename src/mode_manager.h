@@ -5,6 +5,8 @@
 #include "lauxlib.h"
 #include "lualib.h"
 
+#include <stdbool.h>
+
 #include "uthash.h"
 
 #define MAX_MODES 64
@@ -25,6 +27,7 @@ typedef struct {
     char prefix[MAX_PREFIX_LENGTH];
     char name[MAX_NAME_LENGTH];
     Callback* callbacks;
+    bool isTemporary;
 } Mode;
 
 typedef struct {
@@ -35,6 +38,7 @@ typedef struct {
 
 void InitModeManager(ModeManager *modeManager);
 void CleanupModeManager(lua_State* L, ModeManager* modeManager);
+
 Mode* GetCurrentMode(char* input, ModeManager* modeManager);
 
 void InitMode(Mode* mode);

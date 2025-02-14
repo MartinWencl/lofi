@@ -1,0 +1,8 @@
+- [ ] Remake keybinds
+    - register all keybinds from lua with callbacks, in callbacks can generate events and modify state
+    - create default lua scripts that contain the default keybinds (up/down, enter, ...)
+        - create install target to move them into ~/.local/share/
+
+FIXES:
+    - [ ] fix cursor in textbox
+    - [ ] continue scrolling when holding down up/down, now triggers only once

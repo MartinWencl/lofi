@@ -4,7 +4,6 @@
 #include "callbacks/events.h"
 #include "lua.h"
 #include "mode_manager.h"
-// #include "ui/focus.h"
 #include "ui/state.h"
 
 #define INPUT_TEXT_MAX_SIZE 256

@@ -20,7 +20,6 @@ typedef struct {
     struct {
         struct {
             int index;
-            int objectType;  // From existing Focus object type
         } focus;
     } data;
 } Event;

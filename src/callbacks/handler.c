@@ -5,10 +5,18 @@
 #include "utils.h"
 
 void HandleEvent(lua_State* L, State* state, ModeManager* modeManager, Event event) {
+    if (!modeManager) {
+        TraceLog(LOG_ERROR, "Mode manager not found when handling event!");
+        return;
+    }
+
     Mode* mode = modeManager->currentMode;
 
     if (!modeManager->currentMode) {
         mode = GetCurrentMode(state->input, modeManager);
+        if (mode) {
+            mode->isTemporary = true;
+        }
     }
 
     if (!mode) {
