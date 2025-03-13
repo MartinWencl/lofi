@@ -1,32 +1,40 @@
-// state.c
 #include "state.h"
-#include "font.h"
 #include "raylib.h"
-#include <string.h>
 #include <stdlib.h>
-#include "utils.h"
+#include "stddef.h"
+#include "assert.h"
 
-void InitStateStruct(State* state) {
-    memset(state->input, 0, sizeof(state->input));
-    state->list = NULL;
-    state->listCount = 0;
-    state->listScrollIndex = 0;
-    state->focus.index = -1;
+[[nodiscard]]
+State* NewState(void)
+{
+    State* state = (State*)malloc(sizeof(State));
+    if (state == nullptr) {
+        TraceLog(LOG_ERROR, "Failed to create app state!");
+        return nullptr;
+    }
     
-    InitEventQueue(&state->eventQueue);
-    InitModeManager(&state->modes);
+    *state = (State){
+        .input = {0},
+        .list = nullptr,
+        .listCount = 0,
+        .listScrollIndex = 0,
+        .keybindStore = NewKeybindStore(),
+        .focus = {.index = 0},
+        .eventQueue = NewEventQueue(),
+        .modes = NewModeManager(),
+        .ui = {0}
+    };
     
-    // Initialize UI state with defaults
-    // state->ui.loaded.font = GetFontDefault();
-    state->ui.loaded.theme = DEFAULT_THEME;
-    state->ui.loaded.window = (Dimensions){0, 0};
-    
-    state->ui.config.font.name = "monospace";
-    state->ui.config.font.size = 12;
-    state->ui.config.window = DEFAULT_WINDOW_CONFIG;
+    return state;
 }
 
-void CleanupAppState(lua_State* L, State* state) {
-    CleanupModeManager(L, &state->modes);
-    FreeFont(&state->ui);
+void FreeState(State* state) {
+    assert(state != nullptr);
+
+    if (state == nullptr) {
+        TraceLog(LOG_ERROR, "A call to free an alredy freed app state!");
+        return;
+    }
+
+
 }

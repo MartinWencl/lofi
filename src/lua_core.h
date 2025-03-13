@@ -18,9 +18,13 @@
 #define LUA_OK 0
 
 
-int DispatchLuaEvent(lua_State* L, State* state, Mode* mode, EventType event);
-void InitLua(const char* initPath, ModeManager* modeManager, lua_State* L);
-void InitModeManager(ModeManager* modeManager);
+lua_State* NewLuaStateWithModeManager(ModeManager* modeManager);
+
+void LoadLua(State* state, lua_State* L);
 void LoadOptionsFromLua(State* state, lua_State* L);
+
+int DispatchLuaEvent(lua_State* L, State* state, Mode* mode, EventType event);
+void InitModeManager(ModeManager* modeManager);
+
 
 #endif // LUA_CORE_H

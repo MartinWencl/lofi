@@ -31,8 +31,7 @@ typedef struct {
     int size;
 } EventQueue;
 
-// Event queue management functions
-void InitEventQueue(EventQueue* queue);
+EventQueue NewEventQueue(void);
 int EventQueuePush(EventQueue* queue, Event event);
 Event EventQueuePop(EventQueue* queue);
 int IsEventQueueEmpty(EventQueue* queue);

@@ -200,7 +200,11 @@ void RegisterModeManager(ModeManager* modeManager, lua_State* L)
     TraceLog(LOG_DEBUG, "LUA MODES: Pushed the mode manager into user data.");
 }
 
-void InitLua(const char* initPath, ModeManager* modeManager, lua_State* L) {
+lua_State* NewLuaStateWithModeManager(ModeManager* modeManager) {
+    lua_State* L = luaL_newstate();
+
+    char* initPath = "init.lua";
+
     luaL_openlibs(L);
     InitLuaModule(L);
     RegisterModeManager(modeManager, L);
@@ -219,4 +223,6 @@ void InitLua(const char* initPath, ModeManager* modeManager, lua_State* L) {
     }
 
     TraceLog(LOG_DEBUG, "Lua initialized, init.lua OK.");
+
+    return L;
 }

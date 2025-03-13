@@ -10,11 +10,13 @@ char *GetEventAsStr(EventType event_type) {
     return eventStrs[event_type];
 }
 
-void InitEventQueue(EventQueue* queue) {
-    queue->front = 0;
-    queue->rear = -1;
-    queue->size = 0;
-    TraceLog(LOG_DEBUG, "STATE: Initialized the event queue.");
+EventQueue NewEventQueue(void) {
+    return (EventQueue) {
+        .front = 0,
+        .rear = -1,
+        .size = 0,
+        .events = {0},
+    };
 }
 
 int EventQueuePush(EventQueue* queue, Event event) {

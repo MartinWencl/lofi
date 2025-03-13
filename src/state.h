@@ -6,6 +6,8 @@
 #include "mode_manager.h"
 #include "ui/state.h"
 
+#include "input/keybinds.h"
+
 #define INPUT_TEXT_MAX_SIZE 256
 #define MAX_NUMBER_OF_ESC_KEYS 64
 
@@ -20,6 +22,8 @@ typedef struct {
     int listCount;
     int listScrollIndex;
 
+    KeybindStore keybindStore; 
+
     Focus focus;
     // FocusManager focus;
     EventQueue eventQueue;
@@ -28,7 +32,7 @@ typedef struct {
     UIState ui;
 } State;
 
-void InitStateStruct(State* state);
-void CleanupAppState(lua_State* L, State* state);
+State* NewState(void);
+void FreeState(State*);
 
 #endif // STATE_H

@@ -36,6 +36,8 @@ typedef struct {
     int modeCount;
 } ModeManager;
 
+ModeManager NewModeManager(void);
+
 void InitModeManager(ModeManager *modeManager);
 void CleanupModeManager(lua_State* L, ModeManager* modeManager);
 

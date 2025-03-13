@@ -5,11 +5,16 @@
 #include "raylib.h"
 #include <string.h>
 
+void CheckAllInput(State* state, EventQueue* eventQueue) {
+    
+}
+
 void ProcessInput(State* state, EventQueue* eventQueue) {
     // Keyboard focus changes
     if (IsKeyPressed(KEY_DOWN) || IsKeyPressed(KEY_UP) || GetMouseWheelMove() != 0) {
         TraceLog(LOG_DEBUG, "Up/Down key pressed.");
         TraceLog(LOG_DEBUG, "Focus: %d", state->focus.index);
+
 
         int newIndex = state->focus.index;
 

@@ -3,6 +3,10 @@
 #include <string.h>
 #include "raylib.h"
 
+ModeManager NewModeManager(void) {
+ return (ModeManager) {0};
+}
+
 void InitModeManager(ModeManager *modeManager) {
     memset(modeManager->modes, 0, sizeof(modeManager->modes));
     modeManager->currentMode = NULL;

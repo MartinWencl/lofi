@@ -19,7 +19,6 @@ target_include_directories(lofi PRIVATE
 find_package(PkgConfig REQUIRED)
 pkg_check_modules(FONTCONFIG REQUIRED fontconfig)
 pkg_check_modules(LUAJIT REQUIRED luajit)
-pkg_check_modules(RAYLIB REQUIRED raylib)
 pkg_check_modules(GLFW REQUIRED glfw3)
 
 # Include directories and link libraries for FontConfig
@@ -32,14 +31,27 @@ target_include_directories(lofi PRIVATE ${LUAJIT_INCLUDE_DIRS})
 target_link_libraries(lofi ${LUAJIT_LIBRARIES})
 target_compile_options(lofi PRIVATE ${LUAJIT_CFLAGS_OTHER})
 
-# Include directories and link libraries for Raylib
-target_include_directories(lofi PRIVATE ${RAYLIB_INCLUDE_DIRS})
-target_link_libraries(lofi ${RAYLIB_LIBRARIES})
-target_compile_options(lofi PRIVATE ${RAYLIB_CFLAGS_OTHER})
-
 target_include_directories(lofi PRIVATE ${GLFW_INCLUDE_DIRS})
 target_link_libraries(lofi ${GLFW_LIBRARIES})
 target_compile_options(lofi PRIVATE ${GLFW_CFLAGS_OTHER})
+
+# -- Download and compile raylib --
+set(RAYLIB_VERSION 5.5)
+find_package(raylib ${RAYLIB_VERSION} QUIET) # QUIET or REQUIRED
+if (NOT raylib_FOUND) # If there's none, fetch and build raylib
+  include(FetchContent)
+  FetchContent_Declare(
+    raylib
+    DOWNLOAD_EXTRACT_TIMESTAMP OFF
+    URL https://github.com/raysan5/raylib/archive/refs/tags/${RAYLIB_VERSION}.tar.gz
+  )
+  FetchContent_GetProperties(raylib)
+  if (NOT raylib_POPULATED) # Have we downloaded raylib yet?
+    set(FETCHCONTENT_QUIET NO)
+    FetchContent_MakeAvailable(raylib)
+    set(BUILD_EXAMPLES OFF CACHE BOOL "" FORCE) # don't build the supplied examples
+  endif()
+endif()
 
 # Copy init.lua from the src directory to the build directory post-build
 add_custom_command(TARGET lofi POST_BUILD
@@ -50,4 +62,4 @@ add_custom_command(TARGET lofi POST_BUILD
 )
 
 # Link the libraries to the executable
-target_link_libraries(lofi ${FONTCONFIG_LIBRARIES} ${LUAJIT_LIBRARIES} ${RAYLIB_LIBRARIES} -lm)
+target_link_libraries(lofi ${FONTCONFIG_LIBRARIES} ${LUAJIT_LIBRARIES} raylib -lm)

@@ -3,6 +3,7 @@
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
+#include "raylib.h"
 
 #define LOAD_THEME_COLOR(fieldName) \
     lua_getfield(L, -1, #fieldName); \
@@ -55,5 +56,6 @@ void LoadThemeFromLua(lua_State* L, UIState* state) {
 
     state->loaded.theme = theme;
 
+    TraceLog(LOG_DEBUG, "Loaded theme.");
     lua_pop(L, 3);
 }
