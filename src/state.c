@@ -19,7 +19,7 @@ State* NewState(void)
         .listCount = 0,
         .listScrollIndex = 0,
         .keybindStore = NewKeybindStore(),
-        .focus = {.index = 0},
+        .focus = {.index = -1},
         .eventQueue = NewEventQueue(),
         .modes = NewModeManager(),
         .ui = {0}

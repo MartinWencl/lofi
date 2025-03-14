@@ -25,8 +25,8 @@ int main(void) {
     LoadOptionsFromLua(lofi, lua);
 
     // change to newwidowfromconfig later and keep it in a variable here
-    // and free down if needed
-    InitWindowFromConfig(&lofi->ui.config.window, "lofi");
+    Dimensions windowDimenstions = InitWindowFromConfig(&lofi->ui.config.window, "lofi");
+    lofi->ui.loaded.window = windowDimenstions;
 
     TraceLog(LOG_INFO, "Setup complete!");
     

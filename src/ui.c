@@ -3,6 +3,9 @@
 #include <stdbool.h>
 #include <string.h>
 
+// WARNING: for testing only this unit shouldnt contain raylib
+#include "raylib.h"
+
 typedef enum {
     SPLIT_HORIZONTAL,  // Split along width
     SPLIT_VERTICAL     // Split along height

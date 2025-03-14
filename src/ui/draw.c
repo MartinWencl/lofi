@@ -54,6 +54,10 @@ void DrawInputBox(UIState* state, Rectangle bounds, char* text, int maxSize, boo
     Color bgColor = captureInput ? state->loaded.theme.selected : state->loaded.theme.background;
     DrawRectangleRec(bounds, bgColor);
     
+    // Draw border/outline
+    Color borderColor = captureInput ? state->loaded.theme.accent : state->loaded.theme.border;
+    DrawRectangleLinesEx(bounds, 1.0f, borderColor);
+    
     // Calculate text bounds with padding
     Rectangle textBounds = {
         bounds.x + PADDING,
@@ -64,23 +68,8 @@ void DrawInputBox(UIState* state, Rectangle bounds, char* text, int maxSize, boo
     
     // Draw text
     Font font = state->loaded.font;
-    DrawTextRec(font, text, textBounds, state->config.font.size, 2.0f, true, state->loaded.theme.text);
-    
-    // Draw cursor when in edit mode
-    if (captureInput) {
-        float time = GetTime();
-        if (fmod(time, CURSOR_BLINK_RATE * 2) < CURSOR_BLINK_RATE) {
-            Vector2 textSize = MeasureTextEx(GetFontDefault(), text, state->config.font.size, 2.0f);
-            float cursorX = textBounds.x + textSize.x;
-            if (cursorX < textBounds.x + textBounds.width) {
-                DrawLineV(
-                    (Vector2){ cursorX, textBounds.y },
-                    (Vector2){ cursorX, textBounds.y + state->config.font.size },
-                    state->loaded.theme.text
-                );
-            }
-        }
-    }
+    DrawTextEx(font, text, (Vector2){textBounds.x, textBounds.y}, 
+              state->config.font.size, 2.0f, state->loaded.theme.text);
 }
 
 void DrawListView(UIState* state, Rectangle bounds, const char** items, int count, int* selectedIndex) {

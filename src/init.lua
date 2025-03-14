@@ -27,7 +27,7 @@ lofi.register_mode({
     callbacks = {
         on_search = function(state)
             local input = state.input_text
-            local cmd = string.format("fd --max-depth=1 %s .", input)
+            local cmd = string.format("fd --max-depth=1 %s *", input)
             print(cmd)
             local handle = io.popen(cmd)
             if not handle then
@@ -62,7 +62,7 @@ lofi.register_mode({
     callbacks = {
         on_search = function(state)
             local input = state.input_text
-            local cmd = string.format("rg --files %s .", input)
+            local cmd = string.format("rg %s *", input)
             local handle = io.popen(cmd)
             if not handle then
                 state.list = { "Error: ripgrep command failed" }

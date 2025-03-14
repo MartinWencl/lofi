@@ -7,14 +7,6 @@ ModeManager NewModeManager(void) {
  return (ModeManager) {0};
 }
 
-void InitModeManager(ModeManager *modeManager) {
-    memset(modeManager->modes, 0, sizeof(modeManager->modes));
-    modeManager->currentMode = NULL;
-    modeManager->modeCount = 0;
-
-    TraceLog(LOG_DEBUG, "STATE: Initialized the mode manager.");   
-}
-
 void InitMode(Mode* mode) {
     mode->id = -1;
     memset(mode->prefix, 0, MAX_PREFIX_LENGTH);
@@ -158,4 +150,8 @@ Mode* GetCurrentMode(char* input, ModeManager* modeManager) {
     }
 
     return NULL;
+}
+
+Mode* GetModeFromName(char* name, ModeManager* modeManager) {
+    return nullptr;
 }
