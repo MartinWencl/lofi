@@ -5,6 +5,6 @@
 #include "callbacks/events.h"
 #include <stdbool.h>
 
-void ProcessInput(State* state, EventQueue* eventQueue);
+void ProcessInput(State* state, EventQueue* eventQueue, lua_State* L);
 
 #endif // INPUT_DEFINITIONS_H

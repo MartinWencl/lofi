@@ -1,13 +1,3 @@
-local inputbox = {
-    type = "inputbox",      -- Unique identifier (e.g., "inputbox", "listview")
-    id = "optional_unique_id", -- Optional unique identifier
-    -- config = {},           -- Widget-specific configuration
-    -- state = {},            -- Mutable widget state
-    events = { -- Standardized event handlers
-        on_init = function(config, state) end,
-    },
-}
-
 lofi.opt.window = {
     refresh_rate = 60,        -- Integer value for refresh rate
     window_percent_width = 0.3, -- Number between 0 and 1 for window width as screen percentage
@@ -21,13 +11,23 @@ lofi.opt.font = {
     size = 40,
 }
 
+lofi.keybind({"down"}, function (state)
+    state.focus = state.focus + 1;
+    return state;
+end)
+
+lofi.keybind({"up"}, function (state)
+    state.focus = state.focus - 1;
+    return state;
+end)
+
 lofi.register_mode({
-    name = "find (fd) files",
+    name = "find",
     prefix = "fd",
     callbacks = {
         on_search = function(state)
             local input = state.input_text
-            local cmd = string.format("fd --max-depth=1 %s *", input)
+            local cmd = string.format("fd --max-depth=1 %s .", input)
             print(cmd)
             local handle = io.popen(cmd)
             if not handle then
@@ -36,6 +36,7 @@ lofi.register_mode({
             end
             local result = handle:read("*a")
             handle:close()
+
             if not result or result == "" then
                 state.list = { "No files found" }
             else
@@ -57,7 +58,7 @@ lofi.register_mode({
 })
 
 lofi.register_mode({
-    name = "ripgrep files",
+    name = "ripgrep",
     prefix = "rg",
     callbacks = {
         on_search = function(state)
@@ -105,16 +106,6 @@ lofi.register_mode({
                 state.list = { "No files found" }
                 return state
             end
-        end,
-    },
-})
-
-lofi.register_mode({
-    name = "example_mode2",
-    prefix = "e",
-    callbacks = {
-        on_search = function()
-            lofi.log("SEARCHING FROM LUA", lofi.log_level.DEBUG)
         end,
     },
 })

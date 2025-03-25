@@ -9,6 +9,7 @@ typedef enum {
     EVENT_SEARCH_TRIGGERED,
     EVENT_ITEM_SELECTED,
     EVENT_FOCUS_CHANGED,
+    EVENT_KEYBIND_TRIGGERED,
     
     // HACK: keep exit last, it's used to calc the number of elems
     // don't explicitly number events

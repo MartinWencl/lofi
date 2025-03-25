@@ -18,7 +18,7 @@
 #define LUA_OK 0
 
 
-lua_State* NewLuaStateWithModeManager(ModeManager* modeManager);
+lua_State* NewLuaState(State* state);
 
 void LoadLua(State* state, lua_State* L);
 void LoadOptionsFromLua(State* state, lua_State* L);
@@ -26,5 +26,7 @@ void LoadOptionsFromLua(State* state, lua_State* L);
 int DispatchLuaEvent(lua_State* L, State* state, Mode* mode, EventType event);
 void InitModeManager(ModeManager* modeManager);
 
+void PushStateToLua(lua_State* L, State* state, Mode* mode);
+void UpdateStateFromLua(lua_State* L, State* state, Mode* mode);
 
 #endif // LUA_CORE_H

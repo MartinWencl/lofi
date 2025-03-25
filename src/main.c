@@ -19,7 +19,7 @@ int main(void) {
     State* lofi = NewState();
     assert(lofi != nullptr); 
 
-    lua_State* lua = NewLuaStateWithModeManager(&lofi->modes);
+    lua_State* lua = NewLuaState(lofi);
     assert(lua != nullptr); 
 
     LoadOptionsFromLua(lofi, lua);
@@ -31,7 +31,7 @@ int main(void) {
     TraceLog(LOG_INFO, "Setup complete!");
     
     while (!WindowShouldClose()) {
-        ProcessInput(lofi, &lofi->eventQueue);
+        ProcessInput(lofi, &lofi->eventQueue, lua);
 
         while (!IsEventQueueEmpty(&lofi->eventQueue)) {
             Event event = EventQueuePop(&lofi->eventQueue);

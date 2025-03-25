@@ -8,7 +8,7 @@
 
 #include <string.h>
 
-static ModeManager* GetModeManager(lua_State* L) {
+ModeManager* GetModeManager(lua_State* L) {
     lua_getfield(L, LUA_REGISTRYINDEX, MODE_MANAGER_KEY);
     ModeManager* modeManager = (ModeManager*)lua_touserdata(L, -1);
     lua_pop(L, 1);
@@ -83,5 +83,16 @@ int lofi_RegisterMode(lua_State* L) {
     lua_pop(L, 1);
     
     TraceLog(LOG_DEBUG, "LUA MODES: Mode registration complete.");
+    return 0;
+}
+
+int lofi_SetMode(lua_State* L) {
+    luaL_checktype(L, 1, LUA_TSTRING);    
+    char* name = lua_tostring(L, 1);
+    
+    ModeManager *modeManager = GetModeManager(L);
+    modeManager->currentMode = GetModeFromName(name, modeManager);
+    
+    TraceLog(LOG_DEBUG, "LUA MODES: Set mode to '%s'", name);  // Added mode name to log
     return 0;
 }

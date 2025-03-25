@@ -1,7 +1,9 @@
 #include "lua_core.h"
 #include "events.h"
 #include "font.h"
+#include "input/keybinds.h"
 #include "mode_manager.h"
+#include "state.h"
 #include "utils.h"
 
 #include "lua.h"
@@ -16,18 +18,15 @@
 #include <stdlib.h>
 #include <string.h>
 
-static void PushStateToLua(lua_State* L, State* state, Mode* mode) {
+void PushStateToLua(lua_State* L, State* state, Mode* mode) {
     bool removeModePrefix = mode->isTemporary;
 
     lua_newtable(L);
 
-    // Handle input text with optional mode prefix removal
     const char* input_to_push = state->input;
     if (removeModePrefix && state->input[0] != '\0') {
-        // Find first space
         const char* space = strchr(state->input, ' ');
         if (space != NULL) {
-            // Skip the space character itself
             input_to_push = space + 1;
         }
     }
@@ -35,7 +34,6 @@ static void PushStateToLua(lua_State* L, State* state, Mode* mode) {
     lua_pushstring(L, input_to_push);
     lua_setfield(L, -2, "input_text");
     
-    // Push list items
     lua_newtable(L);
     for (int i = 0; i < state->listCount; i++) {
         lua_pushstring(L, state->list[i]);
@@ -48,7 +46,7 @@ static void PushStateToLua(lua_State* L, State* state, Mode* mode) {
     TraceLog(LOG_DEBUG, "STATE: Pushed the state to lua.");
 }
 
-static void UpdateStateFromLua(lua_State* L, State* state, Mode* mode) {
+void UpdateStateFromLua(lua_State* L, State* state, Mode* mode) {
     bool addModePrefix = mode->isTemporary;
     // Ensure we're working with a table
     luaL_checktype(L, -1, LUA_TTABLE);
@@ -88,7 +86,13 @@ static void UpdateStateFromLua(lua_State* L, State* state, Mode* mode) {
     // Update focus
     lua_getfield(L, -1, "focus");
     if (!lua_isnil(L, -1)) {
-        state->focus.index = lua_tointeger(L, -1);
+        int new_index = lua_tointeger(L, -1);
+        if (new_index < -1) {
+            new_index = -1;
+        } else if (new_index > state->listCount - 1) {
+            new_index = state->listCount - 1;
+        }
+        state->focus.index = new_index;
     }
     lua_pop(L, 1);
     TraceLog(LOG_DEBUG, "STATE: Updated the state from lua.");
@@ -122,7 +126,6 @@ int DispatchLuaEvent(lua_State* L, State* state, Mode* mode, EventType EventType
     for (int i = 0; i < callback->refCount; i++) {
         int ref = callback->luaRefs[i];
         
-        // Get the callback function from registry
         lua_rawgeti(L, LUA_REGISTRYINDEX, ref);
         if (!lua_isfunction(L, -1)) {
             TraceLog(LOG_ERROR, "LUA EVENT: Invalid callback reference for %s", callbackName);
@@ -131,10 +134,8 @@ int DispatchLuaEvent(lua_State* L, State* state, Mode* mode, EventType EventType
             continue;
         }
 
-        // Push current app state as second argument
         PushStateToLua(L, state, mode);
 
-        // Call the function with event table and state table as arguments
         if (lua_pcall(L, 1, 1, 0) != LUA_OK) {
             const char* errorMessage = lua_tostring(L, -1);
             TraceLog(LOG_ERROR, "LUA EVENT: Error in callback execution: %s", errorMessage);
@@ -143,7 +144,6 @@ int DispatchLuaEvent(lua_State* L, State* state, Mode* mode, EventType EventType
             continue;
         }
 
-        // Handle return value if it's a table (updated state)
         if (lua_istable(L, -1)) {
             UpdateStateFromLua(L, state, mode);
         }
@@ -178,6 +178,7 @@ int InitLuaModule(lua_State* L) {
     luaopen_table(L);
         LUA_SET_FUNCTION(lofi_Log, "log");
         LUA_SET_FUNCTION(lofi_RegisterMode, "register_mode");
+        LUA_SET_FUNCTION(lofi_keybind, "keybind");
 
         LUA_SET_TABLE("log_level",
             LUA_SET_INT(LOG_INFO, "INFO");
@@ -200,14 +201,15 @@ void RegisterModeManager(ModeManager* modeManager, lua_State* L)
     TraceLog(LOG_DEBUG, "LUA MODES: Pushed the mode manager into user data.");
 }
 
-lua_State* NewLuaStateWithModeManager(ModeManager* modeManager) {
+lua_State* NewLuaState(State* state) {
     lua_State* L = luaL_newstate();
 
     char* initPath = "init.lua";
 
     luaL_openlibs(L);
     InitLuaModule(L);
-    RegisterModeManager(modeManager, L);
+    RegisterModeManager(&state->modes, L);
+    RegisterKeybindStore(&state->keybindStore, L);
 
     // this is more of a hack, but it makes sure the
     // values exist before the file is run
