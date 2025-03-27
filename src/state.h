@@ -27,6 +27,6 @@ struct State {
 };
 
 State* NewState(void);
-void FreeState(State*);
+void FreeState(lua_State* L, State* state);
 
 #endif // STATE_H

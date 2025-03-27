@@ -46,10 +46,8 @@ int main(void) {
     assert(&lofi->list != nullptr); 
     ClearListViewExList(&lofi->list, &lofi->listCount);
 
-    assert(lofi != nullptr); 
-    FreeState(lofi);
+    FreeState(lua, lofi);
 
-    assert(lua != nullptr); 
     lua_close(lua);
 
     CloseWindow();

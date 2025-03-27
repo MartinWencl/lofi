@@ -54,27 +54,6 @@ SplitRectResult SplitRectangle(Rectangle originalRect, float splitPercentage, Sp
     return result;
 }
 
-Rectangle GetRectWithMargins(Rectangle baseRect, Dimensions windowDimensions, 
-                              float leftMarginPercent, float topMarginPercent, 
-                              float rightMarginPercent, float bottomMarginPercent) 
-{
-    Rectangle marginRect = {
-        // X position: base left margin + left margin percentage of window width
-        .x = windowDimensions.width * leftMarginPercent,
-        
-        // Y position: base top margin + top margin percentage of window height
-        .y = windowDimensions.height * topMarginPercent,
-        
-        // Width: reduced by left and right margin percentages
-        .width = windowDimensions.width * (1.0f - leftMarginPercent - rightMarginPercent),
-        
-        // Height: reduced by top and bottom margin percentages
-        .height = windowDimensions.height * (1.0f - topMarginPercent - bottomMarginPercent)
-    };
-    
-    return marginRect;
-}
-
 void DrawUI(State* state, Dimensions windowDimensions) {
     Rectangle window = (Rectangle) {
         0,

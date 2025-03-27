@@ -12,14 +12,14 @@ void ProcessInput(State* state, EventQueue* eventQueue, lua_State* L) {
     // is just to add to input when focused, as that is not supported by keybinds
     // TODO: Move the input processing to the inputbox itself when doing a rewrite of 
     // the widgets
-    ProcessKeybinds(state, &state->keybindStore, &state->eventQueue, L);
+    ProcessKeybinds(state, &state->keybindStore, L);
 
     // Process text input when search bar is selected (focus = -1)
     if (state->focus.index == -1 || state->focus.index >= 0) {
         // Handle character input
         int key = GetCharPressed();
         while (key > 0) {
-            int len = strlen(state->input);
+            unsigned long len = strlen(state->input);
             if (len < sizeof(state->input) - 1) {
                 state->input[len] = (char)key;
                 state->input[len + 1] = '\0';
@@ -31,7 +31,7 @@ void ProcessInput(State* state, EventQueue* eventQueue, lua_State* L) {
         // Handle backspace separately
         if (IsKeyPressed(KEY_BACKSPACE) && state->focus.index == -1) {
             TraceLog(LOG_DEBUG, "Backspace detected.");
-            int len = strlen(state->input);
+            unsigned long len = strlen(state->input);
             if (len > 0) {
                 state->input[len - 1] = '\0';
             }

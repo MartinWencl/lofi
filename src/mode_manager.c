@@ -4,13 +4,16 @@
 #include "raylib.h"
 
 ModeManager NewModeManager(void) {
- return (ModeManager) {0};
+    return (ModeManager) {0};
 }
 
 void InitMode(Mode* mode) {
     mode->id = -1;
+    mode->isTemporary = false;
+
     memset(mode->prefix, 0, MAX_PREFIX_LENGTH);
     memset(mode->name, 0, MAX_NAME_LENGTH);
+
     mode->callbacks = NULL;  // Initialize the hash to NULL
 }
 
@@ -99,7 +102,7 @@ void CleanupCallbacks(lua_State* L, Mode* mode) {
     mode->callbacks = NULL;
 }
 
-void CleanupModeManager(lua_State* L, ModeManager* manager) {
+void FreeModeManager(lua_State* L, ModeManager* manager) {
     if (!L) {
         TraceLog(LOG_WARNING, "CleanupModeManager: Lua state is NULL");
         return;
@@ -145,11 +148,20 @@ Mode* GetCurrentMode(char* input, ModeManager* modeManager) {
         const Mode *mode = &modeManager->modes[i];
         
         if (strcmp(mode->prefix, inputPrefix) == 0) {
+            free(inputPrefix);
             return mode;
         }
     }
 
+    free(inputPrefix);
     return NULL;
+}
+
+ModeManager* GetModeManager(lua_State* L) {
+    lua_getfield(L, LUA_REGISTRYINDEX, MODE_MANAGER_KEY);
+    ModeManager* modeManager = (ModeManager*)lua_touserdata(L, -1);
+    lua_pop(L, 1);
+    return modeManager;
 }
 
 Mode* GetModeFromName(char* name, ModeManager* modeManager) {

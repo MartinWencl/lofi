@@ -88,5 +88,5 @@ Dimensions SetWindowFromConfig(const WindowConfig* config) {
 
 Dimensions InitWindowFromConfig(const WindowConfig* config, char* appName) {
     InitWindow(0, 0, appName);
-    SetWindowFromConfig(config);
+    return SetWindowFromConfig(config);
 }

@@ -14,8 +14,6 @@ typedef struct Dimensions {
     int height;
 } Dimensions;
 
-typedef Dimensions MonitorDimensions;
-
 typedef struct {
     int refreshRate;             // Override refresh rate, 0 to use monitor's default
     float windowPercentWidth;    // Window width as a percentage of monitor width (0.0 - 1.0)

@@ -15,7 +15,7 @@ EventQueue NewEventQueue(void) {
         .front = 0,
         .rear = -1,
         .size = 0,
-        .events = {0},
+        .events = {{0}},
     };
 }
 

@@ -8,13 +8,6 @@
 
 #include <string.h>
 
-ModeManager* GetModeManager(lua_State* L) {
-    lua_getfield(L, LUA_REGISTRYINDEX, MODE_MANAGER_KEY);
-    ModeManager* modeManager = (ModeManager*)lua_touserdata(L, -1);
-    lua_pop(L, 1);
-    return modeManager;
-}
-
 int lofi_RegisterMode(lua_State* L) {
     luaL_checktype(L, 1, LUA_TTABLE);
     

@@ -1,4 +1,6 @@
 #include "state.h"
+#include "lua.h"
+#include "mode_manager.h"
 #include "raylib.h"
 #include <stdlib.h>
 #include "stddef.h"
@@ -22,19 +24,21 @@ State* NewState(void)
         .focus = {.index = -1},
         .eventQueue = NewEventQueue(),
         .modes = NewModeManager(),
-        .ui = {0}
+        .ui = {0},
     };
     
     return state;
 }
 
-void FreeState(State* state) {
+void FreeState(lua_State* L, State* state) {
     assert(state != nullptr);
+    assert(L != nullptr);
 
     if (state == nullptr) {
         TraceLog(LOG_ERROR, "A call to free an alredy freed app state!");
         return;
     }
 
-
+    FreeModeManager(L, &state->modes);
+    free(state);
 }

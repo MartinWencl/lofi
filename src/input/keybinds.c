@@ -49,7 +49,7 @@ bool CheckKeybind(Keybind keybind) {
 bool ExecuteKeybind(State* state, lua_State* L, Keybind keybind) {
     lua_rawgeti(L, LUA_REGISTRYINDEX, keybind.callbackRef);
 
-    Mode* mode = GetCurrentMode(&state->input, &state->modes);
+    Mode* mode = GetCurrentMode((char*)&state->input, &state->modes);
     if (mode == nullptr) {
         TraceLog(LOG_ERROR, "Can't execute keybind, no mode is set!");
         return false;
@@ -197,7 +197,7 @@ int lofi_keybind(lua_State *L) {
     
     Keybind k = NewKeybind();
     
-    int tableLen = lua_objlen(L, 1);
+    size_t tableLen = lua_objlen(L, 1);
     if (tableLen > 0) {
         for (size_t i = 1; i <= tableLen; i++) {
             lua_rawgeti(L, 1, i);
@@ -216,7 +216,7 @@ int lofi_keybind(lua_State *L) {
     lua_pushvalue(L, 2);
     k.callbackRef = luaL_ref(L, LUA_REGISTRYINDEX);
     
-    uint32_t index = AddToKeybindStore(store, k);
+    int32_t index = AddToKeybindStore(store, k);
     if (index == -1) {
         luaL_error(L, "Failed to add keybind: store full");
         return 0;
@@ -233,8 +233,8 @@ double diff_timespec(const struct timespec *time1, const struct timespec *time0)
       + (time1->tv_nsec - time0->tv_nsec) / 1000000000.0;
 }
 
-void ProcessKeybinds(State* state, KeybindStore* store, EventQueue* queue, lua_State* L) {
-    for (int i = 0; i < store->count; i++) {
+void ProcessKeybinds(State* state, KeybindStore* store, lua_State* L) {
+    for (size_t i = 0; i < store->count; i++) {
         Keybind keybind = store->keybinds[i];
         if (CheckKeybind(keybind)) {
             struct timespec now;

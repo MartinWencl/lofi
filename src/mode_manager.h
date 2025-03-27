@@ -12,6 +12,7 @@
 #define MAX_PREFIX_LENGTH 16
 #define MAX_CALLBACK_NAME_LENGTH 32
 #define MAX_CALLBACKS_PER_EVENT 8
+#define MODE_MANAGER_KEY "MODE_MANAGER"
 
 typedef struct Callback {
     char name[MAX_CALLBACK_NAME_LENGTH];
@@ -35,14 +36,15 @@ typedef struct {
 } ModeManager;
 
 ModeManager NewModeManager(void);
-void CleanupModeManager(lua_State* L, ModeManager* modeManager);
+void FreeModeManager(lua_State* L, ModeManager* modeManager);
+ModeManager* GetModeManager(lua_State* L);
 
 Mode* GetCurrentMode(char* input, ModeManager* modeManager);
 Mode* GetModeFromName(char* name, ModeManager* modeManager);
 void InitMode(Mode* mode);
 
 int AddCallback(lua_State* L, Mode* mode, const char* eventName, int funcRef);
-void CleanupCallbacks(lua_State* L, Mode* mode);
+void FreeCallbacks(lua_State* L, Mode* mode);
 Callback* GetCallback(Mode* mode, const char* eventName);
 
 #endif // MODES_H

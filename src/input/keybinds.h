@@ -46,7 +46,7 @@ void RegisterKeybindStore(KeybindStore* store, lua_State* L);
 uint32_t AddToKeybindStore(KeybindStore* store, Keybind keybind);
 void ClearKeybindAt(KeybindStore* store, uint32_t index);
 
-void ProcessKeybinds(State* state, KeybindStore* store, EventQueue* queue, lua_State* L);
+void ProcessKeybinds(State* state, KeybindStore* store, lua_State* L);
 
 // @LUA-EXPORTED-FUNCTION
 int lofi_keybind(lua_State *L); 
